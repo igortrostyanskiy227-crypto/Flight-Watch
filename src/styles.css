@@ -353,15 +353,17 @@ button {
   height: calc(100% - 224px);
   padding: 10px;
   padding-top: 0;
+  align-content: start;
   overflow: auto;
 }
 
 .flight-card {
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
-  min-height: 188px;
-  padding: 16px;
+  min-height: 204px;
+  padding: 14px 16px 16px;
   border: 1px solid var(--line-soft);
   border-left-width: 3px;
   border-radius: 8px;
@@ -369,6 +371,7 @@ button {
   color: var(--text);
   text-align: left;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .flight-card:hover,
@@ -406,7 +409,6 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: -10px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 650;
@@ -445,7 +447,7 @@ button {
 
 .flight-card__topline strong {
   display: block;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1.08;
   font-weight: 760;
 }
@@ -455,7 +457,7 @@ button {
 .flight-card__metrics small,
 .flight-card__footer {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .status-chip {
@@ -463,10 +465,10 @@ button {
   align-items: center;
   justify-content: center;
   min-height: 34px;
-  padding: 0 14px;
+  padding: 0 12px;
   border-radius: 7px;
   border: 1px solid transparent;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 720;
   white-space: nowrap;
 }
@@ -498,22 +500,28 @@ button {
 .flight-card__metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
+  margin-top: auto;
 }
 
 .flight-card__metrics span {
   display: grid;
-  gap: 6px;
-  min-height: 78px;
-  padding: 14px;
+  align-content: center;
+  gap: 5px;
+  min-height: 64px;
+  padding: 10px 12px;
   border: 1px solid rgba(148, 164, 189, 0.14);
   border-radius: 6px;
   background: rgba(5, 10, 18, 0.38);
 }
 
 .flight-card__metrics b {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
+}
+
+.flight-card__metrics small {
+  font-size: 12px;
 }
 
 .flight-card__footer {
