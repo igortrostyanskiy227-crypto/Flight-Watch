@@ -733,9 +733,9 @@ button {
   left: 14px;
   z-index: 430;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  max-height: 178px;
-  min-height: 142px;
+  grid-template-rows: 18px auto minmax(0, 1fr);
+  max-height: min(360px, calc(100% - 28px));
+  min-height: 104px;
   border: 1px solid rgba(237, 243, 251, 0.18);
   border-radius: 8px;
   background: rgba(9, 15, 25, 0.94);
@@ -743,9 +743,38 @@ button {
   backdrop-filter: blur(12px);
 }
 
+.alerts-grabber {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(237, 243, 251, 0.08);
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  cursor: ns-resize;
+}
+
+.alerts-grabber span {
+  width: 54px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 164, 189, 0.42);
+}
+
+.alerts-grabber:hover span,
+.is-resizing-alerts .alerts-grabber span {
+  background: var(--accent);
+}
+
+.is-resizing-alerts {
+  cursor: ns-resize;
+  user-select: none;
+}
+
 .alerts-panel__header {
   justify-content: space-between;
-  padding: 10px 12px 8px;
+  padding: 8px 12px 10px;
   border-bottom: 1px solid rgba(237, 243, 251, 0.12);
 }
 
