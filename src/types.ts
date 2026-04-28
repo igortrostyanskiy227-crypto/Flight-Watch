@@ -15,8 +15,6 @@ export type EventCode =
   | "plan_deviation"
   | "info";
 
-export type ViewMode = "all" | "selected" | "alerts";
-
 export interface Tracker {
   id: string;
   model: string;

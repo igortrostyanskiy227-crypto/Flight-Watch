@@ -7,7 +7,7 @@ import { TopBar } from "./components/TopBar";
 import { MOCK_NOW, mockFlights } from "./data/mockFlights";
 import { calculateAllEvents, hasActiveAlarm } from "./domain/events";
 import { getFlightLabel, minutesBetween } from "./domain/flightUtils";
-import type { Flight, FlightEvent, FlightFilters, ViewMode } from "./types";
+import type { Flight, FlightEvent, FlightFilters } from "./types";
 
 const initialFilters: FlightFilters = {
   query: "",
@@ -88,27 +88,9 @@ function filterFlights(
   });
 }
 
-function scopeFlightsByViewMode(
-  flights: Flight[],
-  selectedFlightId: string | null,
-  viewMode: ViewMode,
-  eventsByFlight: Map<string, FlightEvent[]>,
-): Flight[] {
-  if (viewMode === "selected") {
-    return flights.filter((flight) => flight.id === selectedFlightId);
-  }
-
-  if (viewMode === "alerts") {
-    return flights.filter((flight) => hasActiveAlarm(eventsByFlight.get(flight.id) ?? []));
-  }
-
-  return flights;
-}
-
 export function App() {
   const [filters, setFilters] = useState<FlightFilters>(initialFilters);
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(mockFlights[0]?.id ?? null);
-  const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [detailTab, setDetailTab] = useState<"summary" | "history">("summary");
 
   const allEvents = useMemo(() => calculateAllEvents(mockFlights, MOCK_NOW), []);
@@ -118,10 +100,7 @@ export function App() {
     () => filterFlights(mockFlights, filters, eventsByFlight),
     [eventsByFlight, filters],
   );
-  const visibleFlights = useMemo(
-    () => scopeFlightsByViewMode(filteredFlights, selectedFlightId, viewMode, eventsByFlight),
-    [eventsByFlight, filteredFlights, selectedFlightId, viewMode],
-  );
+  const visibleFlights = filteredFlights;
   const selectedFlight = useMemo(
     () => mockFlights.find((flight) => flight.id === selectedFlightId) ?? null,
     [selectedFlightId],
@@ -159,10 +138,8 @@ export function App() {
         events={allEvents}
         filters={filters}
         onFiltersChange={setFilters}
-        onViewModeChange={setViewMode}
         totalCount={mockFlights.length}
         visibleCount={visibleFlights.length}
-        viewMode={viewMode}
       />
 
       <main className="monitor-layout">
@@ -179,7 +156,6 @@ export function App() {
             flights={visibleFlights}
             onSelectFlight={setSelectedFlightId}
             selectedFlight={selectedFlight && visibleFlightIds.has(selectedFlight.id) ? selectedFlight : null}
-            viewMode={viewMode}
           />
           <AlertsPanel events={visibleEvents} flightsById={flightsById} onSelectFlight={setSelectedFlightId} />
         </section>

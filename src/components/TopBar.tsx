@@ -1,28 +1,21 @@
-import { viewModeLabels } from "../domain/labels";
-import type { FlightEvent, FlightFilters, ViewMode } from "../types";
+import type { FlightEvent, FlightFilters } from "../types";
 
 interface TopBarProps {
   aircraftOptions: Array<{ value: string; label: string }>;
   events: FlightEvent[];
   filters: FlightFilters;
   onFiltersChange: (filters: FlightFilters) => void;
-  onViewModeChange: (mode: ViewMode) => void;
   totalCount: number;
   visibleCount: number;
-  viewMode: ViewMode;
 }
-
-const viewModes: ViewMode[] = ["all", "selected", "alerts"];
 
 export function TopBar({
   aircraftOptions,
   events,
   filters,
   onFiltersChange,
-  onViewModeChange,
   totalCount,
   visibleCount,
-  viewMode,
 }: TopBarProps) {
   const criticalCount = events.filter((event) => event.severity === "critical").length;
   const warningCount = events.filter((event) => event.severity === "warning").length;
@@ -112,29 +105,14 @@ export function TopBar({
         </label>
       </div>
 
-      <div className="mode-and-status">
-        <div className="mode-toggle" aria-label="Режим отображения">
-          {viewModes.map((mode) => (
-            <button
-              className={mode === viewMode ? "is-active" : ""}
-              key={mode}
-              onClick={() => onViewModeChange(mode)}
-              type="button"
-            >
-              {viewModeLabels[mode]}
-            </button>
-          ))}
-        </div>
-
-        <div className="status-summary" aria-label="Сводка">
-          <span>
-            На карте <strong>{visibleCount}</strong>/{totalCount}
-          </span>
-          <span className="status-dot critical" />
-          <strong>{criticalCount}</strong>
-          <span className="status-dot warning" />
-          <strong>{warningCount}</strong>
-        </div>
+      <div className="topbar-status">
+        <span>
+          На карте <strong>{visibleCount}</strong>/{totalCount}
+        </span>
+        <span className="status-dot critical" />
+        <strong>{criticalCount}</strong>
+        <span className="status-dot warning" />
+        <strong>{warningCount}</strong>
       </div>
     </header>
   );

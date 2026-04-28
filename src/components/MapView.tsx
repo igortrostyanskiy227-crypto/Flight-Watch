@@ -3,20 +3,18 @@ import { useEffect, useMemo } from "react";
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { worstSeverity } from "../domain/events";
 import { getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
-import type { EventSeverity, Flight, FlightEvent, ViewMode } from "../types";
+import type { EventSeverity, Flight, FlightEvent } from "../types";
 
 interface MapViewProps {
   eventsByFlight: Map<string, FlightEvent[]>;
   flights: Flight[];
   onSelectFlight: (flightId: string) => void;
   selectedFlight: Flight | null;
-  viewMode: ViewMode;
 }
 
 interface MapCameraProps {
   flights: Flight[];
   selectedFlight: Flight | null;
-  viewMode: ViewMode;
 }
 
 function markerIcon(flight: Flight, severity: EventSeverity | "none", selected: boolean): L.DivIcon {
@@ -36,14 +34,14 @@ function markerIcon(flight: Flight, severity: EventSeverity | "none", selected: 
   });
 }
 
-function MapCamera({ flights, selectedFlight, viewMode }: MapCameraProps) {
+function MapCamera({ flights, selectedFlight }: MapCameraProps) {
   const map = useMap();
   const visibleKey = flights.map((flight) => flight.id).join(":");
 
   useEffect(() => {
     if (selectedFlight) {
       const point = getCurrentPoint(selectedFlight);
-      map.flyTo([point.lat, point.lng], viewMode === "selected" ? 8 : 7, {
+      map.flyTo([point.lat, point.lng], 7, {
         animate: true,
         duration: 0.6,
       });
@@ -57,12 +55,12 @@ function MapCamera({ flights, selectedFlight, viewMode }: MapCameraProps) {
       }));
       map.fitBounds(bounds, { maxZoom: 7, padding: [44, 44] });
     }
-  }, [flights.length, map, selectedFlight, viewMode, visibleKey]);
+  }, [flights.length, map, selectedFlight, visibleKey]);
 
   return null;
 }
 
-export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFlight, viewMode }: MapViewProps) {
+export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFlight }: MapViewProps) {
   const selectedRoute = useMemo(
     () => selectedFlight?.route.map((point) => [point.lat, point.lng] as [number, number]) ?? [],
     [selectedFlight],
@@ -120,7 +118,7 @@ export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFligh
           );
         })}
 
-        <MapCamera flights={flights} selectedFlight={selectedFlight} viewMode={viewMode} />
+        <MapCamera flights={flights} selectedFlight={selectedFlight} />
       </MapContainer>
 
       <div className="map-readout">

@@ -1,4 +1,4 @@
-import type { EventSeverity, FlightKind, FlightStatus, ViewMode } from "../types";
+import type { EventSeverity, FlightKind, FlightStatus } from "../types";
 
 export const kindLabels: Record<FlightKind, string> = {
   commercial: "Рейс",
@@ -16,10 +16,4 @@ export const severityLabels: Record<EventSeverity, string> = {
   info: "Info",
   warning: "Warning",
   critical: "Critical",
-};
-
-export const viewModeLabels: Record<ViewMode, string> = {
-  all: "Все рейсы",
-  selected: "Только выбранный",
-  alerts: "Только тревожные",
 };
