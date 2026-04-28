@@ -53,8 +53,12 @@ export function AlertsPanel({ events, flightsById, onSelectFlight }: AlertsPanel
       <div className="alerts-panel__header">
         <div>
           <h2>События и сигнализации</h2>
-          <p>
-            Critical {criticalCount} · Warning {warningCount} · Всего {events.length}
+          <p className="alerts-summary">
+            <span className="status-dot critical" />
+            Критические {criticalCount}
+            <span className="status-dot warning" />
+            Предупреждения {warningCount}
+            <span>Всего {events.length}</span>
           </p>
         </div>
       </div>

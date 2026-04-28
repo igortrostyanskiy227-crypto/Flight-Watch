@@ -13,7 +13,7 @@ const initialFilters: FlightFilters = {
   query: "",
   status: "all",
   kind: "all",
-  aircraft: "all",
+  aircraft: [],
   period: "all",
 };
 
@@ -68,7 +68,7 @@ function filterFlights(
       return false;
     }
 
-    if (filters.aircraft !== "all" && flight.aircraft.registration !== filters.aircraft) {
+    if (filters.aircraft.length > 0 && !filters.aircraft.includes(flight.aircraft.registration)) {
       return false;
     }
 

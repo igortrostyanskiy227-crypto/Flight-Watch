@@ -1,6 +1,7 @@
 import { worstSeverity } from "../domain/events";
 import { formatClock, getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
 import { statusLabels } from "../domain/labels";
+import { useState } from "react";
 import type { Flight, FlightEvent, FlightFilters } from "../types";
 
 interface FlightListProps {
@@ -24,9 +25,25 @@ export function FlightList({
   selectedFlightId,
   totalCount,
 }: FlightListProps) {
+  const [aircraftFilterOpen, setAircraftFilterOpen] = useState(false);
   const visibleEvents = flights.flatMap((flight) => eventsByFlight.get(flight.id) ?? []);
   const criticalCount = visibleEvents.filter((event) => event.severity === "critical").length;
   const warningCount = visibleEvents.filter((event) => event.severity === "warning").length;
+  const selectedAircraftCount = filters.aircraft.length;
+  const aircraftFilterLabel =
+    selectedAircraftCount === 0
+      ? "Все ВС"
+      : selectedAircraftCount === 1
+        ? aircraftOptions.find((option) => option.value === filters.aircraft[0])?.label ?? filters.aircraft[0]
+        : `Выбрано ${selectedAircraftCount}`;
+
+  const toggleAircraft = (registration: string) => {
+    const nextAircraft = filters.aircraft.includes(registration)
+      ? filters.aircraft.filter((value) => value !== registration)
+      : [...filters.aircraft, registration];
+
+    onFiltersChange({ ...filters, aircraft: nextAircraft });
+  };
 
   return (
     <aside className="left-panel" aria-label="Список рейсов">
@@ -37,36 +54,34 @@ export function FlightList({
         </div>
       </div>
 
-      <div className="fleet-summary" aria-label="Сводка по объектам на карте">
-        <div className="fleet-summary__count">
-          <span>На карте</span>
-          <strong>{flights.length}</strong>
-          <span>/</span>
-          <strong>{totalCount}</strong>
-        </div>
-        <div className="fleet-summary__alerts">
-          <span className="status-dot critical" />
-          <strong>{criticalCount}</strong>
-          <span className="status-dot warning" />
-          <strong>{warningCount}</strong>
-        </div>
-      </div>
-
-      <label className="panel-aircraft-filter">
+      <div className="panel-aircraft-filter">
         <span>Борт</span>
-        <select
-          aria-label="Фильтр по воздушному судну"
-          onChange={(event) => onFiltersChange({ ...filters, aircraft: event.target.value })}
-          value={filters.aircraft}
+        <button
+          aria-expanded={aircraftFilterOpen}
+          aria-haspopup="listbox"
+          className="aircraft-multiselect"
+          onClick={() => setAircraftFilterOpen((isOpen) => !isOpen)}
+          type="button"
         >
-          <option value="all">Все ВС</option>
-          {aircraftOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
+          <strong>{aircraftFilterLabel}</strong>
+          <em>⌄</em>
+        </button>
+
+        {aircraftFilterOpen && (
+          <div className="aircraft-options" role="listbox" aria-label="Выбор бортов">
+            <button className="aircraft-option" onClick={() => onFiltersChange({ ...filters, aircraft: [] })} type="button">
+              <span className={selectedAircraftCount === 0 ? "is-checked" : ""} />
+              Все ВС
+            </button>
+            {aircraftOptions.map((option) => (
+              <button className="aircraft-option" key={option.value} onClick={() => toggleAircraft(option.value)} type="button">
+                <span className={filters.aircraft.includes(option.value) ? "is-checked" : ""} />
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="flight-list">
         {flights.length === 0 ? (

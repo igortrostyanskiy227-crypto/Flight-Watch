@@ -93,6 +93,6 @@ export interface FlightFilters {
   query: string;
   status: "all" | FlightStatus | "alarm";
   kind: "all" | FlightKind;
-  aircraft: "all" | string;
+  aircraft: string[];
   period: "all" | "lastHour" | "today" | "signalOverdue";
 }
