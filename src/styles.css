@@ -404,16 +404,6 @@ button {
   box-shadow: 0 0 0 4px rgba(217, 154, 0, 0.18);
 }
 
-.flight-card__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 650;
-}
-
 .flight-card.severity-critical,
 .alert-row.severity-critical,
 .event-line.severity-critical,
@@ -458,6 +448,11 @@ button {
 .flight-card__footer {
   color: var(--muted);
   font-size: 13px;
+}
+
+.flight-card__topline small {
+  margin-top: 4px;
+  display: block;
 }
 
 .status-chip {

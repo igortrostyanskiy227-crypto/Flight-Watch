@@ -1,6 +1,6 @@
 import { worstSeverity } from "../domain/events";
 import { formatClock, getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
-import { kindLabels, statusLabels } from "../domain/labels";
+import { statusLabels } from "../domain/labels";
 import type { Flight, FlightEvent, FlightFilters } from "../types";
 
 interface FlightListProps {
@@ -85,17 +85,10 @@ export function FlightList({
                 onClick={() => onSelectFlight(flight.id)}
                 type="button"
               >
-                <span className="flight-card__meta">
-                  <span>Сигнал {formatClock(flight.lastSignalAt)}</span>
-                  <span className={`event-indicator severity-${severity}`}>
-                    {events.length > 0 ? `${events.length} events` : "clean"}
-                  </span>
-                </span>
-
                 <span className="flight-card__topline">
                   <span>
                     <strong>{label}</strong>
-                    <small>{kindLabels[flight.kind]}</small>
+                    <small>Сигнал {formatClock(flight.lastSignalAt)}</small>
                   </span>
                   <span className={`status-chip status-${flight.status}`}>{statusLabels[flight.status]}</span>
                 </span>
