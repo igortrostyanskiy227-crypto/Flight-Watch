@@ -7,6 +7,15 @@ React + TypeScript + Vite prototype for dispatcher-style aircraft monitoring.
 This project is a static Vite app and can be deployed for free on Vercel, Netlify,
 Cloudflare Pages, or GitHub Pages.
 
+GitHub Pages is configured through `.github/workflows/pages.yml`. Every push to
+`main` builds the app and publishes `dist`.
+
+Expected GitHub Pages URL:
+
+```text
+https://igortrostyanskiy227-crypto.github.io/Flight-Watch/
+```
+
 Recommended Vercel settings:
 
 - Framework preset: `Vite`
