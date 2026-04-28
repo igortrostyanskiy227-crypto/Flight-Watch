@@ -1,19 +1,41 @@
 import { useMemo, useState } from "react";
-import type { FlightFilters } from "../types";
+import { getFlightLabel } from "../domain/flightUtils";
+import type { Flight, FlightFilters } from "../types";
 
 interface TopBarProps {
   aircraftOptions: Array<{ value: string; label: string }>;
   filters: FlightFilters;
   onFiltersChange: (filters: FlightFilters) => void;
+  selectedFlight: Flight | null;
+  visibleFlightCount: number;
 }
 
 export function TopBar({
   aircraftOptions,
   filters,
   onFiltersChange,
+  selectedFlight,
+  visibleFlightCount,
 }: TopBarProps) {
   const [shareOpen, setShareOpen] = useState(false);
-  const shareUrl = useMemo(() => window.location.href, []);
+  const [shareScope, setShareScope] = useState<"sector" | "selected">("sector");
+  const [accessLevel, setAccessLevel] = useState<"view" | "operate" | "admin">("view");
+  const [linkTtl, setLinkTtl] = useState<"1h" | "24h" | "7d" | "never">("24h");
+  const selectedFlightLabel = selectedFlight ? getFlightLabel(selectedFlight) : "рейс не выбран";
+  const shareUrl = useMemo(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("scope", shareScope);
+    url.searchParams.set("access", accessLevel);
+    url.searchParams.set("ttl", linkTtl);
+
+    if (shareScope === "selected" && selectedFlight) {
+      url.searchParams.set("flight", selectedFlight.id);
+    } else {
+      url.searchParams.delete("flight");
+    }
+
+    return url.toString();
+  }, [accessLevel, linkTtl, selectedFlight, shareScope]);
 
   const updateFilters = (patch: Partial<FlightFilters>) => {
     onFiltersChange({ ...filters, ...patch });
@@ -116,36 +138,83 @@ export function TopBar({
             onMouseDown={(event) => event.stopPropagation()}
           >
             <header className="share-modal__header">
-              <strong>Share to selection "Flight Watch"</strong>
+              <div>
+                <strong>Поделиться мониторингом</strong>
+                <span>
+                  {shareScope === "selected" && selectedFlight
+                    ? `Борт ${selectedFlight.aircraft.registration} · ${selectedFlightLabel}`
+                    : `Сектор · ${visibleFlightCount} объектов на карте`}
+                </span>
+              </div>
               <button className="copy-link" onClick={copyShareUrl} type="button">
-                Copy link
+                Скопировать ссылку
               </button>
               <button aria-label="Закрыть" className="close-button" onClick={() => setShareOpen(false)} type="button">
                 ×
               </button>
             </header>
 
+            <div className="share-scope" aria-label="Что открыть по ссылке">
+              <button
+                className={shareScope === "sector" ? "is-active" : ""}
+                onClick={() => setShareScope("sector")}
+                type="button"
+              >
+                Все борта
+                <span>{visibleFlightCount} объектов</span>
+              </button>
+              <button
+                className={shareScope === "selected" ? "is-active" : ""}
+                disabled={!selectedFlight}
+                onClick={() => setShareScope("selected")}
+                type="button"
+              >
+                Текущий борт
+                <span>{selectedFlight ? selectedFlightLabel : "не выбран"}</span>
+              </button>
+            </div>
+
             <div className="invite-row">
-              <input placeholder="Add comma separated emails to invite" type="email" />
-              <button type="button">Invite</button>
+              <input placeholder="Email диспетчера или наблюдателя" type="email" />
+              <button type="button">Пригласить</button>
+            </div>
+
+            <div className="share-settings">
+              <label>
+                Уровень доступа
+                <select value={accessLevel} onChange={(event) => setAccessLevel(event.target.value as typeof accessLevel)}>
+                  <option value="view">Просмотр карты и событий</option>
+                  <option value="operate">Просмотр + подтверждение событий</option>
+                  <option value="admin">Администрирование доступа</option>
+                </select>
+              </label>
+              <label>
+                Срок действия ссылки
+                <select value={linkTtl} onChange={(event) => setLinkTtl(event.target.value as typeof linkTtl)}>
+                  <option value="1h">1 час</option>
+                  <option value="24h">24 часа</option>
+                  <option value="7d">7 дней</option>
+                  <option value="never">Без срока</option>
+                </select>
+              </label>
             </div>
 
             <div className="access-list">
-              <h3>Who has access</h3>
+              <h3>Доступ сейчас</h3>
               <div className="access-row">
-                <span className="access-icon">◎</span>
-                <strong>Anyone</strong>
-                <button type="button">can view ›</button>
+                <span className="access-icon">◉</span>
+                <strong>Любой с ссылкой</strong>
+                <span>{accessLevel === "view" ? "только просмотр" : accessLevel === "operate" ? "оператор" : "админ"}</span>
               </div>
               <div className="access-row">
                 <span className="access-icon">□</span>
-                <strong>Anyone in Team project</strong>
-                <button type="button">1 person ›</button>
+                <strong>Команда Flight Watch</strong>
+                <span>3 участника</span>
               </div>
               <div className="access-row">
                 <span className="avatar-dot">I</span>
-                <strong>Igor (you)</strong>
-                <span>owner</span>
+                <strong>Igor</strong>
+                <span>владелец</span>
               </div>
             </div>
           </section>

@@ -137,6 +137,8 @@ export function App() {
         aircraftOptions={aircraftOptions}
         filters={filters}
         onFiltersChange={setFilters}
+        selectedFlight={selectedFlight && visibleFlightIds.has(selectedFlight.id) ? selectedFlight : null}
+        visibleFlightCount={visibleFlights.length}
       />
 
       <main className="monitor-layout">
