@@ -8,9 +8,14 @@ interface FlightListProps {
   flights: Flight[];
   onSelectFlight: (flightId: string) => void;
   selectedFlightId: string | null;
+  totalCount: number;
 }
 
-export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFlightId }: FlightListProps) {
+export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFlightId, totalCount }: FlightListProps) {
+  const visibleEvents = flights.flatMap((flight) => eventsByFlight.get(flight.id) ?? []);
+  const criticalCount = visibleEvents.filter((event) => event.severity === "critical").length;
+  const warningCount = visibleEvents.filter((event) => event.severity === "warning").length;
+
   return (
     <aside className="left-panel" aria-label="Список рейсов">
       <div className="panel-heading">
@@ -18,6 +23,16 @@ export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFl
           <h2>Рейсы и полёты</h2>
           <p>{flights.length} объектов после фильтрации</p>
         </div>
+      </div>
+
+      <div className="fleet-summary" aria-label="Сводка по объектам на карте">
+        <span>
+          На карте <strong>{flights.length}</strong>/{totalCount}
+        </span>
+        <span className="status-dot critical" />
+        <strong>{criticalCount}</strong>
+        <span className="status-dot warning" />
+        <strong>{warningCount}</strong>
       </div>
 
       <div className="flight-list">

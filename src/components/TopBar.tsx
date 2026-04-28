@@ -1,27 +1,26 @@
-import type { FlightEvent, FlightFilters } from "../types";
+import { useMemo, useState } from "react";
+import type { FlightFilters } from "../types";
 
 interface TopBarProps {
   aircraftOptions: Array<{ value: string; label: string }>;
-  events: FlightEvent[];
   filters: FlightFilters;
   onFiltersChange: (filters: FlightFilters) => void;
-  totalCount: number;
-  visibleCount: number;
 }
 
 export function TopBar({
   aircraftOptions,
-  events,
   filters,
   onFiltersChange,
-  totalCount,
-  visibleCount,
 }: TopBarProps) {
-  const criticalCount = events.filter((event) => event.severity === "critical").length;
-  const warningCount = events.filter((event) => event.severity === "warning").length;
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareUrl = useMemo(() => window.location.href, []);
 
   const updateFilters = (patch: Partial<FlightFilters>) => {
     onFiltersChange({ ...filters, ...patch });
+  };
+
+  const copyShareUrl = async () => {
+    await navigator.clipboard?.writeText(shareUrl);
   };
 
   return (
@@ -105,15 +104,53 @@ export function TopBar({
         </label>
       </div>
 
-      <div className="topbar-status">
-        <span>
-          На карте <strong>{visibleCount}</strong>/{totalCount}
-        </span>
-        <span className="status-dot critical" />
-        <strong>{criticalCount}</strong>
-        <span className="status-dot warning" />
-        <strong>{warningCount}</strong>
-      </div>
+      <button className="share-button" onClick={() => setShareOpen(true)} type="button">
+        Поделиться
+      </button>
+
+      {shareOpen && (
+        <div className="modal-backdrop" role="presentation" onMouseDown={() => setShareOpen(false)}>
+          <section
+            aria-label="Настройки доступа"
+            className="share-modal"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="share-modal__header">
+              <strong>Share to selection "Flight Watch"</strong>
+              <button className="copy-link" onClick={copyShareUrl} type="button">
+                Copy link
+              </button>
+              <button aria-label="Закрыть" className="close-button" onClick={() => setShareOpen(false)} type="button">
+                ×
+              </button>
+            </header>
+
+            <div className="invite-row">
+              <input placeholder="Add comma separated emails to invite" type="email" />
+              <button type="button">Invite</button>
+            </div>
+
+            <div className="access-list">
+              <h3>Who has access</h3>
+              <div className="access-row">
+                <span className="access-icon">◎</span>
+                <strong>Anyone</strong>
+                <button type="button">can view ›</button>
+              </div>
+              <div className="access-row">
+                <span className="access-icon">□</span>
+                <strong>Anyone in Team project</strong>
+                <button type="button">1 person ›</button>
+              </div>
+              <div className="access-row">
+                <span className="avatar-dot">I</span>
+                <strong>Igor (you)</strong>
+                <span>owner</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </header>
   );
 }

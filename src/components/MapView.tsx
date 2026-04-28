@@ -19,6 +19,8 @@ interface MapCameraProps {
 
 function markerIcon(flight: Flight, severity: EventSeverity | "none", selected: boolean): L.DivIcon {
   const point = getCurrentPoint(flight);
+  const size = selected ? 46 : 36;
+  const anchor = selected ? 23 : 18;
 
   return L.divIcon({
     className: "aircraft-marker-host",
@@ -29,8 +31,8 @@ function markerIcon(flight: Flight, severity: EventSeverity | "none", selected: 
         <span class="aircraft-marker__tail"></span>
       </div>
     `,
-    iconAnchor: [18, 18],
-    iconSize: [36, 36],
+    iconAnchor: [anchor, anchor],
+    iconSize: [size, size],
   });
 }
 
@@ -106,7 +108,13 @@ export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFligh
               key={flight.id}
               position={[point.lat, point.lng]}
             >
-              <Tooltip direction="top" offset={[0, -12]} opacity={0.96} permanent={selected}>
+              <Tooltip
+                className={`aircraft-tooltip ${selected ? "is-selected" : ""}`}
+                direction="top"
+                offset={[0, selected ? -18 : -12]}
+                opacity={0.96}
+                permanent={selected}
+              >
                 <span className="map-tooltip">
                   <strong>{getFlightLabel(flight)}</strong>
                   <span>

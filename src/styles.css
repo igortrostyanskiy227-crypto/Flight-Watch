@@ -76,7 +76,8 @@ button {
 .brand-block,
 .filter-strip,
 .status-summary,
-.topbar-status,
+.share-button,
+.fleet-summary,
 .flight-card__topline,
 .flight-card__metrics,
 .flight-card__footer,
@@ -182,17 +183,24 @@ button {
   box-shadow: 0 0 0 2px rgba(217, 154, 0, 0.16);
 }
 
-.topbar-status {
+.share-button {
   justify-content: flex-end;
-  gap: 10px;
-  min-width: 0;
+  justify-self: end;
+  align-self: end;
   min-height: 36px;
-  padding: 0 12px;
+  padding: 0 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #101826;
-  color: var(--muted);
+  background: var(--accent);
+  color: #151000;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 760;
   white-space: nowrap;
+}
+
+.share-button:hover {
+  background: #efae12;
 }
 
 .status-summary {
@@ -255,6 +263,28 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
+.fleet-summary {
+  gap: 10px;
+  min-height: 54px;
+  margin: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #101826;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.fleet-summary span:first-child {
+  margin-left: auto;
+  font-size: 16px;
+}
+
+.fleet-summary strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
 .panel-heading h2,
 .alerts-panel h2,
 .detail-section h3,
@@ -266,8 +296,9 @@ button {
 .flight-list {
   display: grid;
   gap: 8px;
-  height: calc(100% - 66px);
+  height: calc(100% - 130px);
   padding: 10px;
+  padding-top: 0;
   overflow: auto;
 }
 
@@ -480,6 +511,10 @@ button {
   transform-origin: 50% 50%;
 }
 
+.aircraft-marker.is-selected {
+  transform: rotate(var(--heading)) scale(1.18);
+}
+
 .aircraft-marker::before {
   position: absolute;
   inset: 1px;
@@ -491,10 +526,13 @@ button {
 }
 
 .aircraft-marker.is-selected::before {
-  border-color: var(--accent);
+  inset: -4px;
+  border: 3px solid var(--accent);
+  background: rgba(28, 23, 18, 0.92);
   box-shadow:
-    0 0 0 3px rgba(217, 154, 0, 0.18),
-    0 0 20px rgba(217, 154, 0, 0.32);
+    0 0 0 4px rgba(217, 154, 0, 0.28),
+    0 0 24px rgba(217, 154, 0, 0.54),
+    0 10px 24px rgba(0, 0, 0, 0.42);
 }
 
 .aircraft-marker__body,
@@ -547,6 +585,12 @@ button {
   background: #9cd2ff;
 }
 
+.aircraft-marker.is-selected .aircraft-marker__body,
+.aircraft-marker.is-selected .aircraft-marker__wing,
+.aircraft-marker.is-selected .aircraft-marker__tail {
+  background: #ff7b8a;
+}
+
 .map-tooltip {
   display: grid;
   gap: 2px;
@@ -563,6 +607,30 @@ button {
   border-radius: 5px;
   background: rgba(8, 14, 24, 0.88);
   box-shadow: var(--shadow);
+}
+
+.leaflet-tooltip.aircraft-tooltip.is-selected {
+  padding: 12px 14px;
+  border-color: rgba(237, 243, 251, 0.32);
+  border-radius: 8px;
+  background: rgba(17, 23, 30, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.28),
+    0 12px 26px rgba(0, 0, 0, 0.42);
+}
+
+.leaflet-tooltip.aircraft-tooltip.is-selected .map-tooltip {
+  gap: 6px;
+  font-size: 18px;
+}
+
+.leaflet-tooltip.aircraft-tooltip.is-selected .map-tooltip strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.leaflet-tooltip.aircraft-tooltip.is-selected .map-tooltip span {
+  font-size: 18px;
 }
 
 .map-readout {
@@ -924,12 +992,152 @@ button {
   padding: 10px;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  align-items: start;
+  justify-items: end;
+  padding: 86px 22px 22px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.share-modal {
+  width: min(482px, calc(100vw - 32px));
+  border: 1px solid rgba(17, 24, 39, 0.16);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #121722;
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.34);
+}
+
+.share-modal__header,
+.invite-row,
+.access-row {
+  display: flex;
+  align-items: center;
+}
+
+.share-modal__header {
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 16px;
+}
+
+.share-modal__header strong {
+  flex: 1;
+  font-size: 13px;
+}
+
+.copy-link,
+.close-button,
+.access-row button {
+  border: 0;
+  background: transparent;
+  color: #0069e8;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.close-button {
+  width: 28px;
+  height: 28px;
+  color: #121722;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.invite-row {
+  gap: 8px;
+  padding: 10px 16px 14px;
+}
+
+.invite-row input {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #1683ff;
+  border-radius: 5px;
+  background: #fff;
+  color: #121722;
+  font-size: 12px;
+  outline: none;
+}
+
+.invite-row input::placeholder {
+  color: #a4a9b3;
+}
+
+.invite-row button {
+  width: 54px;
+  height: 34px;
+  border: 0;
+  border-radius: 7px;
+  background: #d9dadd;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.access-list {
+  display: grid;
+  gap: 1px;
+  padding: 4px 16px 16px;
+}
+
+.access-list h3 {
+  margin: 0 0 8px;
+  color: #717781;
+  font-size: 12px;
+}
+
+.access-row {
+  gap: 12px;
+  min-height: 40px;
+  color: #171b22;
+  font-size: 13px;
+}
+
+.access-row strong {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.access-row span:last-child {
+  color: #171b22;
+}
+
+.access-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: #101620;
+  font-size: 18px;
+}
+
+.avatar-dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #6054f6;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 760;
+}
+
 @media (max-width: 1380px) {
   .topbar {
     grid-template-columns: 250px minmax(460px, 1fr);
   }
 
-  .topbar-status {
+  .share-button {
     grid-column: 1 / -1;
     justify-content: space-between;
   }
@@ -951,7 +1159,7 @@ button {
   }
 
   .filter-strip,
-  .topbar-status {
+  .share-button {
     flex-wrap: wrap;
   }
 

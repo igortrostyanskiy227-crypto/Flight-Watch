@@ -135,11 +135,8 @@ export function App() {
     <div className="app-shell">
       <TopBar
         aircraftOptions={aircraftOptions}
-        events={allEvents}
         filters={filters}
         onFiltersChange={setFilters}
-        totalCount={mockFlights.length}
-        visibleCount={visibleFlights.length}
       />
 
       <main className="monitor-layout">
@@ -148,6 +145,7 @@ export function App() {
           flights={visibleFlights}
           onSelectFlight={setSelectedFlightId}
           selectedFlightId={selectedFlightId}
+          totalCount={mockFlights.length}
         />
 
         <section className="map-stage" aria-label="Карта воздушной обстановки">
