@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { worstSeverity } from "../domain/events";
 import { getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
@@ -10,6 +10,7 @@ interface MapViewProps {
   flights: Flight[];
   onSelectFlight: (flightId: string) => void;
   selectedFlight: Flight | null;
+  selectedFromListAt: number;
 }
 
 interface MapCameraProps {
@@ -62,7 +63,8 @@ function MapCamera({ flights, selectedFlight }: MapCameraProps) {
   return null;
 }
 
-export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFlight }: MapViewProps) {
+export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFlight, selectedFromListAt }: MapViewProps) {
+  const [pinnedTooltipFlightId, setPinnedTooltipFlightId] = useState<string | null>(null);
   const selectedRoute = useMemo(
     () => selectedFlight?.route.map((point) => [point.lat, point.lng] as [number, number]) ?? [],
     [selectedFlight],
@@ -72,6 +74,16 @@ export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFligh
     : flights[0]
       ? getCurrentPoint(flights[0])
       : { lat: 55.7558, lng: 37.6173 };
+
+  useEffect(() => {
+    if (!selectedFlight || selectedFromListAt === 0) {
+      return;
+    }
+
+    setPinnedTooltipFlightId(selectedFlight.id);
+    const timer = window.setTimeout(() => setPinnedTooltipFlightId(null), 4500);
+    return () => window.clearTimeout(timer);
+  }, [selectedFlight, selectedFromListAt]);
 
   return (
     <div className="map-wrap">
@@ -100,6 +112,7 @@ export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFligh
           const point = getCurrentPoint(flight);
           const severity = worstSeverity(eventsByFlight.get(flight.id) ?? []);
           const selected = selectedFlight?.id === flight.id;
+          const showSelectedTooltip = pinnedTooltipFlightId === flight.id;
 
           return (
             <Marker
@@ -109,11 +122,11 @@ export function MapView({ eventsByFlight, flights, onSelectFlight, selectedFligh
               position={[point.lat, point.lng]}
             >
               <Tooltip
-                className={`aircraft-tooltip ${selected ? "is-selected" : ""}`}
+                className={`aircraft-tooltip ${showSelectedTooltip ? "is-selected" : ""}`}
                 direction="top"
-                offset={[0, selected ? -18 : -12]}
+                offset={[0, showSelectedTooltip ? -18 : -12]}
                 opacity={0.96}
-                permanent={selected}
+                permanent={showSelectedTooltip}
               >
                 <span className="map-tooltip">
                   <strong>{getFlightLabel(flight)}</strong>

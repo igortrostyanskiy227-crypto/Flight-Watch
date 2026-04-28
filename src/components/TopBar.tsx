@@ -3,7 +3,6 @@ import { getFlightLabel } from "../domain/flightUtils";
 import type { Flight, FlightFilters } from "../types";
 
 interface TopBarProps {
-  aircraftOptions: Array<{ value: string; label: string }>;
   filters: FlightFilters;
   onFiltersChange: (filters: FlightFilters) => void;
   selectedFlight: Flight | null;
@@ -11,7 +10,6 @@ interface TopBarProps {
 }
 
 export function TopBar({
-  aircraftOptions,
   filters,
   onFiltersChange,
   selectedFlight,
@@ -92,22 +90,6 @@ export function TopBar({
             <option value="all">Все</option>
             <option value="commercial">Рейс</option>
             <option value="private">Частный</option>
-          </select>
-        </label>
-
-        <label className="compact-control">
-          <span>Борт</span>
-          <select
-            aria-label="Фильтр по воздушному судну"
-            onChange={(event) => updateFilters({ aircraft: event.target.value })}
-            value={filters.aircraft}
-          >
-            <option value="all">Все ВС</option>
-            {aircraftOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
           </select>
         </label>
 

@@ -1,17 +1,29 @@
 import { worstSeverity } from "../domain/events";
 import { formatClock, getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
 import { kindLabels, statusLabels } from "../domain/labels";
-import type { Flight, FlightEvent } from "../types";
+import type { Flight, FlightEvent, FlightFilters } from "../types";
 
 interface FlightListProps {
+  aircraftOptions: Array<{ value: string; label: string }>;
   eventsByFlight: Map<string, FlightEvent[]>;
+  filters: FlightFilters;
   flights: Flight[];
+  onFiltersChange: (filters: FlightFilters) => void;
   onSelectFlight: (flightId: string) => void;
   selectedFlightId: string | null;
   totalCount: number;
 }
 
-export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFlightId, totalCount }: FlightListProps) {
+export function FlightList({
+  aircraftOptions,
+  eventsByFlight,
+  filters,
+  flights,
+  onFiltersChange,
+  onSelectFlight,
+  selectedFlightId,
+  totalCount,
+}: FlightListProps) {
   const visibleEvents = flights.flatMap((flight) => eventsByFlight.get(flight.id) ?? []);
   const criticalCount = visibleEvents.filter((event) => event.severity === "critical").length;
   const warningCount = visibleEvents.filter((event) => event.severity === "warning").length;
@@ -26,14 +38,35 @@ export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFl
       </div>
 
       <div className="fleet-summary" aria-label="Сводка по объектам на карте">
-        <span>
-          На карте <strong>{flights.length}</strong>/{totalCount}
-        </span>
-        <span className="status-dot critical" />
-        <strong>{criticalCount}</strong>
-        <span className="status-dot warning" />
-        <strong>{warningCount}</strong>
+        <div className="fleet-summary__count">
+          <span>На карте</span>
+          <strong>{flights.length}</strong>
+          <span>/</span>
+          <strong>{totalCount}</strong>
+        </div>
+        <div className="fleet-summary__alerts">
+          <span className="status-dot critical" />
+          <strong>{criticalCount}</strong>
+          <span className="status-dot warning" />
+          <strong>{warningCount}</strong>
+        </div>
       </div>
+
+      <label className="panel-aircraft-filter">
+        <span>Борт</span>
+        <select
+          aria-label="Фильтр по воздушному судну"
+          onChange={(event) => onFiltersChange({ ...filters, aircraft: event.target.value })}
+          value={filters.aircraft}
+        >
+          <option value="all">Все ВС</option>
+          {aircraftOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className="flight-list">
         {flights.length === 0 ? (
@@ -52,6 +85,13 @@ export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFl
                 onClick={() => onSelectFlight(flight.id)}
                 type="button"
               >
+                <span className="flight-card__meta">
+                  <span>Сигнал {formatClock(flight.lastSignalAt)}</span>
+                  <span className={`event-indicator severity-${severity}`}>
+                    {events.length > 0 ? `${events.length} events` : "clean"}
+                  </span>
+                </span>
+
                 <span className="flight-card__topline">
                   <span>
                     <strong>{label}</strong>
@@ -76,13 +116,6 @@ export function FlightList({ eventsByFlight, flights, onSelectFlight, selectedFl
                   <span>
                     <b>{Math.round(point.headingDeg)}°</b>
                     <small>hdg</small>
-                  </span>
-                </span>
-
-                <span className="flight-card__footer">
-                  <span>Сигнал {formatClock(flight.lastSignalAt)}</span>
-                  <span className={`event-indicator severity-${severity}`}>
-                    {events.length > 0 ? `${events.length} events` : "clean"}
                   </span>
                 </span>
               </button>

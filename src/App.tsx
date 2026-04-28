@@ -91,6 +91,7 @@ function filterFlights(
 export function App() {
   const [filters, setFilters] = useState<FlightFilters>(initialFilters);
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(mockFlights[0]?.id ?? null);
+  const [selectedFromListAt, setSelectedFromListAt] = useState(0);
   const [detailTab, setDetailTab] = useState<"summary" | "history">("summary");
 
   const allEvents = useMemo(() => calculateAllEvents(mockFlights, MOCK_NOW), []);
@@ -131,10 +132,14 @@ export function App() {
     }
   }, [filteredFlights, selectedFlightId]);
 
+  const selectFlightFromList = (flightId: string) => {
+    setSelectedFlightId(flightId);
+    setSelectedFromListAt(Date.now());
+  };
+
   return (
     <div className="app-shell">
       <TopBar
-        aircraftOptions={aircraftOptions}
         filters={filters}
         onFiltersChange={setFilters}
         selectedFlight={selectedFlight && visibleFlightIds.has(selectedFlight.id) ? selectedFlight : null}
@@ -144,8 +149,11 @@ export function App() {
       <main className="monitor-layout">
         <FlightList
           eventsByFlight={eventsByFlight}
+          aircraftOptions={aircraftOptions}
+          filters={filters}
           flights={visibleFlights}
-          onSelectFlight={setSelectedFlightId}
+          onFiltersChange={setFilters}
+          onSelectFlight={selectFlightFromList}
           selectedFlightId={selectedFlightId}
           totalCount={mockFlights.length}
         />
@@ -156,6 +164,7 @@ export function App() {
             flights={visibleFlights}
             onSelectFlight={setSelectedFlightId}
             selectedFlight={selectedFlight && visibleFlightIds.has(selectedFlight.id) ? selectedFlight : null}
+            selectedFromListAt={selectedFromListAt}
           />
           <AlertsPanel events={visibleEvents} flightsById={flightsById} onSelectFlight={setSelectedFlightId} />
         </section>

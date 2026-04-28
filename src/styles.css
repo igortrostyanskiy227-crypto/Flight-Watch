@@ -264,7 +264,8 @@ button {
 }
 
 .fleet-summary {
-  gap: 10px;
+  justify-content: space-between;
+  gap: 18px;
   min-height: 54px;
   margin: 10px;
   padding: 0 14px;
@@ -275,14 +276,67 @@ button {
   white-space: nowrap;
 }
 
-.fleet-summary span:first-child {
-  margin-left: auto;
-  font-size: 16px;
+.fleet-summary__count,
+.fleet-summary__alerts {
+  display: flex;
+  align-items: center;
 }
 
-.fleet-summary strong {
+.fleet-summary__count {
+  gap: 4px;
+  min-width: 0;
+}
+
+.fleet-summary__count span:first-child {
+  margin-right: 2px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.fleet-summary__count strong {
   color: var(--text);
   font-size: 18px;
+}
+
+.fleet-summary__count span:not(:first-child) {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.fleet-summary__alerts {
+  gap: 10px;
+  margin-left: auto;
+}
+
+.fleet-summary__alerts strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.panel-aircraft-filter {
+  display: grid;
+  gap: 10px;
+  padding: 24px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-aircraft-filter span {
+  color: var(--muted-2);
+  font-size: 12px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.panel-aircraft-filter select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #111a27;
+  color: var(--text);
+  outline: none;
+  font-size: 16px;
 }
 
 .panel-heading h2,
@@ -295,8 +349,8 @@ button {
 
 .flight-list {
   display: grid;
-  gap: 8px;
-  height: calc(100% - 130px);
+  gap: 12px;
+  height: calc(100% - 224px);
   padding: 10px;
   padding-top: 0;
   overflow: auto;
@@ -304,10 +358,10 @@ button {
 
 .flight-card {
   display: grid;
-  gap: 10px;
+  gap: 14px;
   width: 100%;
-  min-height: 148px;
-  padding: 12px;
+  min-height: 188px;
+  padding: 16px;
   border: 1px solid var(--line-soft);
   border-left-width: 3px;
   border-radius: 8px;
@@ -347,6 +401,17 @@ button {
   box-shadow: 0 0 0 4px rgba(217, 154, 0, 0.18);
 }
 
+.flight-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: -10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
 .flight-card.severity-critical,
 .alert-row.severity-critical,
 .event-line.severity-critical,
@@ -374,12 +439,14 @@ button {
 
 .flight-card__topline {
   justify-content: space-between;
-  gap: 10px;
+  align-items: start;
+  gap: 14px;
 }
 
 .flight-card__topline strong {
   display: block;
-  font-size: 17px;
+  font-size: 22px;
+  line-height: 1.08;
   font-weight: 760;
 }
 
@@ -388,18 +455,18 @@ button {
 .flight-card__metrics small,
 .flight-card__footer {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 26px;
-  padding: 0 8px;
-  border-radius: 5px;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 7px;
   border: 1px solid transparent;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 720;
   white-space: nowrap;
 }
@@ -431,21 +498,22 @@ button {
 .flight-card__metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 12px;
 }
 
 .flight-card__metrics span {
   display: grid;
-  gap: 1px;
-  min-height: 48px;
-  padding: 7px;
+  gap: 6px;
+  min-height: 78px;
+  padding: 14px;
   border: 1px solid rgba(148, 164, 189, 0.14);
   border-radius: 6px;
   background: rgba(5, 10, 18, 0.38);
 }
 
 .flight-card__metrics b {
-  font-size: 15px;
+  font-size: 24px;
+  line-height: 1;
 }
 
 .flight-card__footer {
