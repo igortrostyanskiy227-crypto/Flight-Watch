@@ -3,20 +3,24 @@ import { Eye, EyeOff, MapPin, X } from "lucide-react";
 import { worstSeverity } from "../domain/events";
 import { formatClock, getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
 import { dataSourceLabels, categoryLabels, statusLabels, trackerStateLabels } from "../domain/labels";
-import type { ChatMessage, FilterTemplate, Flight, FlightEvent, FlightFilters, FlightSort } from "../types";
+import type { ChatMessage, FilterTemplate, Flight, FlightEvent, FlightFilters, FlightListMode, FlightSort } from "../types";
 
 interface FlightListProps {
+  aircraftCount: number;
   chatMessages: ChatMessage[];
   eventsByFlight: Map<string, FlightEvent[]>;
   filterOptions: Record<string, Array<{ value: string; label: string }>>;
   filters: FlightFilters;
   filtersOpen: boolean;
   flights: Flight[];
+  flightsCount: number;
+  listMode: FlightListMode;
   mapVisibleFlightIds: Set<string>;
   onApplyTemplate: (template: FilterTemplate) => void;
   onFiltersOpenChange: (open: boolean) => void;
   onFiltersChange: (filters: FlightFilters) => void;
   onHideFilteredFlights: () => void;
+  onListModeChange: (mode: FlightListMode) => void;
   onSaveTemplate: (name: string) => void;
   onSelectFlight: (flightId: string) => void;
   onShowFilteredFlights: () => void;
@@ -33,17 +37,21 @@ function toggleValue(values: string[], value: string): string[] {
 }
 
 export function FlightList({
+  aircraftCount,
   chatMessages,
   eventsByFlight,
   filterOptions,
   filters,
   filtersOpen,
   flights,
+  flightsCount,
+  listMode,
   mapVisibleFlightIds,
   onApplyTemplate,
   onFiltersOpenChange,
   onFiltersChange,
   onHideFilteredFlights,
+  onListModeChange,
   onSaveTemplate,
   onSelectFlight,
   onShowFilteredFlights,
@@ -58,6 +66,9 @@ export function FlightList({
   const visibleEvents = flights.flatMap((flight) => eventsByFlight.get(flight.id) ?? []);
   const criticalCount = visibleEvents.filter((event) => event.severity === "critical").length;
   const warningCount = visibleEvents.filter((event) => event.severity === "warning").length;
+  const listTitle = listMode === "flights" ? "Список рейсов" : "Список бортов";
+  const objectLabel = listMode === "flights" ? "рейсы" : "борта";
+  const mapToggleLabel = listMode === "flights" ? "Рейсы на карте" : "Борта на карте";
 
   const updateFilters = (patch: Partial<FlightFilters>) => onFiltersChange({ ...filters, ...patch });
   const updateMultiFilter = (key: keyof FlightFilters, value: string) => {
@@ -65,32 +76,48 @@ export function FlightList({
   };
 
   return (
-    <aside className="left-panel" aria-label="Список рейсов">
+    <aside className="left-panel" aria-label={listTitle}>
       <div className="panel-heading">
         <div>
-          <h2>Рейсы и полёты</h2>
+          <h2>{listTitle}</h2>
           <p>
             {flights.length} из {totalCount} · ALERT {criticalCount} · WARNING {warningCount}
           </p>
+        </div>
+        <div className="list-mode-tabs" aria-label="Тип списка">
+          <button
+            className={listMode === "flights" ? "is-active" : ""}
+            onClick={() => onListModeChange("flights")}
+            type="button"
+          >
+            Рейсы <span>{flightsCount}</span>
+          </button>
+          <button
+            className={listMode === "aircraft" ? "is-active" : ""}
+            onClick={() => onListModeChange("aircraft")}
+            type="button"
+          >
+            Борта <span>{aircraftCount}</span>
+          </button>
         </div>
       </div>
 
       <div className="flight-toolbar">
         <label className="flight-sort-control">
           <span>Сортировка</span>
-          <select aria-label="Сортировка списка рейсов" onChange={(event) => onSortChange(event.target.value as FlightSort)} value={sort}>
+          <select aria-label={`Сортировка списка ${objectLabel}`} onChange={(event) => onSortChange(event.target.value as FlightSort)} value={sort}>
             <option value="default">По умолчанию</option>
             <option value="stdAsc">STD ↑</option>
             <option value="stdDesc">STD ↓</option>
           </select>
         </label>
-        <span className="map-bulk-label">Рейсы на карте</span>
+        <span className="map-bulk-label">{mapToggleLabel}</span>
         <div className="map-bulk-actions">
-          <button aria-label="Показать отфильтрованные рейсы на карте" onClick={onShowFilteredFlights} type="button">
+          <button aria-label={`Показать отфильтрованные ${objectLabel} на карте`} onClick={onShowFilteredFlights} type="button">
             <Eye aria-hidden="true" size={16} />
             Показать
           </button>
-          <button aria-label="Скрыть отфильтрованные рейсы с карты" onClick={onHideFilteredFlights} type="button">
+          <button aria-label={`Скрыть отфильтрованные ${objectLabel} с карты`} onClick={onHideFilteredFlights} type="button">
             <EyeOff aria-hidden="true" size={16} />
             Скрыть
           </button>
@@ -105,7 +132,7 @@ export function FlightList({
             const events = eventsByFlight.get(flight.id) ?? [];
             const severity = worstSeverity(events);
             const point = getCurrentPoint(flight);
-            const label = getFlightLabel(flight);
+            const label = listMode === "aircraft" ? flight.aircraft.registration : getFlightLabel(flight);
             const hasAlert = events.some((event) => event.category === "ALERT" || event.severity === "critical");
             const hasWarning = events.some((event) => event.category === "WARNING" || event.severity === "warning");
             const hasUnreadChat = chatMessages.some((message) => message.flightId === flight.id && !message.read && !message.own);
@@ -122,7 +149,8 @@ export function FlightList({
                   <span>
                     <strong>{label}</strong>
                     <small>
-                      STD {formatClock(flight.plan.scheduledDeparture)} · Сигнал {formatClock(flight.lastSignalAt)}
+                      {listMode === "aircraft" ? `Позывной ${flight.callsign ?? flight.aircraft.registration}` : `STD ${formatClock(flight.plan.scheduledDeparture)}`} · Сигнал{" "}
+                      {formatClock(flight.lastSignalAt)}
                     </small>
                   </span>
                   <span className={`status-chip status-${flight.operationalStatus ?? flight.status}`}>
@@ -131,7 +159,8 @@ export function FlightList({
                 </span>
 
                 <span className="flight-card__aircraft">
-                  {flight.aircraft.registration} · {flight.aircraft.model} · {flight.plan.origin} → {flight.plan.destination}
+                  {listMode === "aircraft" ? flight.aircraft.model : flight.aircraft.registration} · {flight.aircraft.typeCode} ·{" "}
+                  {flight.plan.origin} → {flight.plan.destination}
                 </span>
 
                 <span className="flight-card__evidence">
@@ -179,10 +208,10 @@ export function FlightList({
 
       {filtersOpen && (
         <div className="modal-backdrop modal-backdrop--center" role="presentation" onMouseDown={() => onFiltersOpenChange(false)}>
-          <section className="filter-modal" aria-label="Фильтры списка рейсов" onMouseDown={(event) => event.stopPropagation()}>
+          <section className="filter-modal" aria-label={`Фильтры списка ${objectLabel}`} onMouseDown={(event) => event.stopPropagation()}>
             <header className="share-modal__header">
               <div>
-                <strong>Фильтры списка рейсов</strong>
+                <strong>Фильтры списка {objectLabel}</strong>
                 <span>Период, аэродромы, статусы и шаблоны диспетчера</span>
               </div>
               <button aria-label="Закрыть" className="close-button" onClick={() => onFiltersOpenChange(false)} type="button">
@@ -261,14 +290,6 @@ export function FlightList({
                   <option value="ALERT">ALERT</option>
                   <option value="WARNING">WARNING</option>
                   <option value="INFO">INFO</option>
-                </select>
-              </label>
-              <label>
-                Тип полета
-                <select onChange={(event) => updateFilters({ kind: event.target.value as FlightFilters["kind"] })} value={filters.kind}>
-                  <option value="all">Все</option>
-                  <option value="commercial">Рейс</option>
-                  <option value="private">Полёт</option>
                 </select>
               </label>
             </div>

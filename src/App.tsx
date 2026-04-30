@@ -15,6 +15,7 @@ import type {
   Flight,
   FlightEvent,
   FlightFilters,
+  FlightListMode,
   FlightSort,
   FlightStatus,
   OperationalFlightStatus,
@@ -101,6 +102,7 @@ const chatMessages: ChatMessage[] = [
 function enrichFlights(flights: Flight[]): Flight[] {
   return flights.map((flight) => ({
     ...flight,
+    callsign: flight.flightNumber ? flight.callsign : flight.aircraft.registration,
     operationalStatus: flight.operationalStatus ?? statusByFlightId[flight.id] ?? deriveOperationalStatus(flight.status),
     statusEvidence: flight.statusEvidence ?? makeStatusEvidence(flight),
     tracker: {
@@ -232,7 +234,6 @@ function filterFlights(
       }
     }
 
-    if (filters.kind !== "all" && flight.kind !== filters.kind) return false;
     if (!matchesSelected(flight.aircraft.registration, filters.aircraft)) return false;
     if (!matchesSelected(flight.aircraft.typeCode, filters.aircraftTypes)) return false;
     if (!matchesSelected(flight.plan.origin, filters.dep)) return false;
@@ -260,10 +261,13 @@ function sortFlights(flights: Flight[], sort: FlightSort): Flight[] {
   return sorted;
 }
 
+function isInListMode(flight: Flight, listMode: FlightListMode): boolean {
+  return listMode === "flights" ? Boolean(flight.flightNumber) : !flight.flightNumber;
+}
+
 function countActiveFilters(filters: FlightFilters): number {
   return [
     filters.status !== "all",
-    filters.kind !== "all",
     filters.aircraft.length > 0,
     filters.aircraftTypes.length > 0,
     filters.dep.length > 0,
@@ -279,6 +283,7 @@ function countActiveFilters(filters: FlightFilters): number {
 export function App() {
   const [filters, setFilters] = useState<FlightFilters>(initialFilters);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [listMode, setListMode] = useState<FlightListMode>("flights");
   const [sort, setSort] = useState<FlightSort>("default");
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(mockFlights[0]?.id ?? null);
   const [selectedFromListAt, setSelectedFromListAt] = useState(0);
@@ -313,9 +318,12 @@ export function App() {
   );
   const eventsByFlight = useMemo(() => groupEventsByFlight(allEvents), [allEvents]);
   const flightsById = useMemo(() => new Map(flights.map((flight) => [flight.id, flight])), [flights]);
+  const flightsForMode = useMemo(() => flights.filter((flight) => isInListMode(flight, listMode)), [flights, listMode]);
+  const flightsCount = useMemo(() => flights.filter((flight) => isInListMode(flight, "flights")).length, [flights]);
+  const aircraftCount = flights.length - flightsCount;
   const filteredFlights = useMemo(
-    () => sortFlights(filterFlights(flights, filters, eventsByFlight), sort),
-    [eventsByFlight, filters, flights, sort],
+    () => sortFlights(filterFlights(flightsForMode, filters, eventsByFlight), sort),
+    [eventsByFlight, filters, flightsForMode, sort],
   );
   const visibleFlights = filteredFlights;
   const mapFlights = useMemo(
@@ -335,18 +343,18 @@ export function App() {
   const activeFilterCount = useMemo(() => countActiveFilters(filters), [filters]);
   const filterOptions = useMemo(
     () => ({
-      aircraft: flights.map((flight) => ({
+      aircraft: flightsForMode.map((flight) => ({
         value: flight.aircraft.registration,
         label: `${flight.aircraft.registration} · ${flight.aircraft.typeCode}`,
       })),
-      aircraftTypes: uniqueOptions(flights.map((flight) => flight.aircraft.typeCode)),
-      dep: uniqueOptions(flights.map((flight) => flight.plan.origin)),
-      dest: uniqueOptions(flights.map((flight) => flight.plan.destination)),
-      altn: uniqueOptions(flights.map((flight) => flight.plan.alternate)),
-      etopsEra: uniqueOptions(flights.map((flight) => flight.plan.etopsAlternate)),
-      tkoffAltn: uniqueOptions(flights.map((flight) => flight.plan.takeoffAlternate)),
+      aircraftTypes: uniqueOptions(flightsForMode.map((flight) => flight.aircraft.typeCode)),
+      dep: uniqueOptions(flightsForMode.map((flight) => flight.plan.origin)),
+      dest: uniqueOptions(flightsForMode.map((flight) => flight.plan.destination)),
+      altn: uniqueOptions(flightsForMode.map((flight) => flight.plan.alternate)),
+      etopsEra: uniqueOptions(flightsForMode.map((flight) => flight.plan.etopsAlternate)),
+      tkoffAltn: uniqueOptions(flightsForMode.map((flight) => flight.plan.takeoffAlternate)),
     }),
-    [flights],
+    [flights, flightsForMode],
   );
 
   useEffect(() => {
@@ -450,6 +458,7 @@ export function App() {
       <TopBar
         activeFilterCount={activeFilterCount}
         filters={filters}
+        listMode={listMode}
         onFiltersChange={setFilters}
         onOpenFilters={() => setFiltersOpen(true)}
         selectedFlight={selectedFlight && visibleFlightIds.has(selectedFlight.id) ? selectedFlight : null}
@@ -464,11 +473,15 @@ export function App() {
           filters={filters}
           filtersOpen={filtersOpen}
           flights={visibleFlights}
+          aircraftCount={aircraftCount}
+          flightsCount={flightsCount}
+          listMode={listMode}
           mapVisibleFlightIds={mapVisibleFlightIds}
           onApplyTemplate={(template) => setFilters(template.filters)}
           onFiltersOpenChange={setFiltersOpen}
           onFiltersChange={setFilters}
           onHideFilteredFlights={() => setFilteredFlightsMapVisibility(false)}
+          onListModeChange={setListMode}
           onSaveTemplate={saveCurrentTemplate}
           onSelectFlight={selectFlightFromList}
           onShowFilteredFlights={() => setFilteredFlightsMapVisibility(true)}
@@ -477,7 +490,7 @@ export function App() {
           selectedFlightId={selectedFlightId}
           sort={sort}
           templates={templates}
-          totalCount={flights.length}
+          totalCount={flightsForMode.length}
         />
 
         <section className="map-stage" aria-label="Карта воздушной обстановки">

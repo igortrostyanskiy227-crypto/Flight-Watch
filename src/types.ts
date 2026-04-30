@@ -139,6 +139,8 @@ export interface FlightFilters {
 
 export type FlightSort = "default" | "stdAsc" | "stdDesc";
 
+export type FlightListMode = "flights" | "aircraft";
+
 export interface FilterTemplate {
   id: string;
   name: string;

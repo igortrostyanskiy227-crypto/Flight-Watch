@@ -1,7 +1,7 @@
 import type { Flight, RoutePoint } from "../types";
 
 export function getFlightLabel(flight: Flight): string {
-  return flight.flightNumber ?? flight.callsign ?? flight.id;
+  return flight.flightNumber ?? flight.callsign ?? flight.aircraft.registration ?? flight.id;
 }
 
 export function getCurrentPoint(flight: Flight): RoutePoint {
