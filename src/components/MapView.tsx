@@ -1,7 +1,7 @@
 import L from "leaflet";
 import { Building2, CloudSun, Layers, Route, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { CircleMarker, MapContainer, Marker, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { CircleMarker, MapContainer, Marker, Polyline, TileLayer, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import { worstSeverity } from "../domain/events";
 import { getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
 import type { EventSeverity, Flight, FlightEvent } from "../types";
@@ -138,8 +138,10 @@ export function MapView({ eventsByFlight, flights, highlightedPoint, onSelectFli
         maxZoom={11}
         minZoom={4}
         scrollWheelZoom
+        zoomControl={false}
         zoom={6}
       >
+        <ZoomControl position="topright" />
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -252,17 +254,14 @@ export function MapView({ eventsByFlight, flights, highlightedPoint, onSelectFli
       <div className="map-readout">
         <span>Сектор</span>
         <strong>{flights.length}</strong>
-        {selectedFlight ? (
-          <span>{getFlightLabel(selectedFlight)}</span>
-        ) : (
-          <select aria-label="Сектор карты" value={sectorId} onChange={(event) => setSectorId(event.target.value as typeof sectorId)}>
-            {mapSectors.map((sector) => (
-              <option key={sector.id} value={sector.id}>
-                {sector.label}
-              </option>
-            ))}
-          </select>
-        )}
+        <select aria-label="Сектор карты" value={sectorId} onChange={(event) => setSectorId(event.target.value as typeof sectorId)}>
+          {mapSectors.map((sector) => (
+            <option key={sector.id} value={sector.id}>
+              {sector.label}
+            </option>
+          ))}
+        </select>
+        {selectedFlight && <span>{getFlightLabel(selectedFlight)}</span>}
       </div>
 
       <div className="map-layers" aria-label="Слои карты">

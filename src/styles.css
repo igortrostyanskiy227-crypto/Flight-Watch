@@ -817,6 +817,11 @@ button {
   display: none;
 }
 
+.flight-map .leaflet-top.leaflet-right {
+  top: 12px;
+  right: 12px;
+}
+
 .selected-route {
   filter: drop-shadow(0 0 8px rgba(217, 154, 0, 0.42));
 }
@@ -974,9 +979,22 @@ button {
   backdrop-filter: blur(10px);
 }
 
+.map-readout select {
+  min-width: 168px;
+  height: 30px;
+  appearance: none;
+  padding: 0 30px 0 9px;
+  border: 1px solid rgba(148, 164, 189, 0.22);
+  border-radius: 5px;
+  background: var(--select-chevron) calc(100% - 9px) 50% / 12px 7px no-repeat, #111a27;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+}
+
 .map-layers {
   position: absolute;
-  top: 96px;
+  top: 62px;
   left: 12px;
   z-index: 420;
   display: flex;
