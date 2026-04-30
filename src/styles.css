@@ -370,15 +370,20 @@ button {
   min-width: 0;
 }
 
+.map-bulk-control {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 3px 4px 3px 10px;
+  border: 1px solid rgba(148, 164, 189, 0.14);
+  border-radius: 7px;
+  background: rgba(5, 10, 18, 0.22);
+}
+
 .map-bulk-label {
-  grid-column: 1;
-}
-
-.map-bulk-actions {
-  grid-column: 2;
-}
-
-.flight-toolbar > span {
   color: var(--muted-2);
   font-size: 11px;
   font-weight: 760;
@@ -422,7 +427,11 @@ button {
 
 .map-bulk-actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  padding: 2px;
+  border: 1px solid rgba(148, 164, 189, 0.14);
+  border-radius: 7px;
+  background: rgba(17, 26, 39, 0.7);
 }
 
 .map-bulk-actions button {
