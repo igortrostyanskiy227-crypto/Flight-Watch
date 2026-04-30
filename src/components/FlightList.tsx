@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, MapPin, X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { worstSeverity } from "../domain/events";
 import { formatClock, getCurrentPoint, getFlightLabel } from "../domain/flightUtils";
 import { dataSourceLabels, categoryLabels, statusLabels, trackerStateLabels } from "../domain/labels";
@@ -147,7 +147,28 @@ export function FlightList({
               >
                 <span className="flight-card__topline">
                   <span>
-                    <strong>{label}</strong>
+                    <strong className="flight-card__label">
+                      <span>{label}</span>
+                      <span
+                        aria-label={mapVisible ? "Скрыть рейс с карты" : "Показать рейс на карте"}
+                        className={`flight-card__map-toggle ${mapVisible ? "is-visible" : "is-hidden"}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onToggleMapFlight(flight.id);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onToggleMapFlight(flight.id);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        {mapVisible ? <Eye aria-hidden="true" size={18} /> : <EyeOff aria-hidden="true" size={18} />}
+                      </span>
+                    </strong>
                     <small>
                       {listMode === "aircraft" ? `Позывной ${flight.callsign ?? flight.aircraft.registration}` : `STD ${formatClock(flight.plan.scheduledDeparture)}`} · Сигнал{" "}
                       {formatClock(flight.lastSignalAt)}
@@ -171,16 +192,6 @@ export function FlightList({
                 </span>
 
                 <span className="flight-card__indicators">
-                  <span className={mapVisible ? "is-active" : ""} onClick={(event) => event.stopPropagation()}>
-                    <button
-                      aria-label={mapVisible ? "Скрыть рейс с карты" : "Показать рейс на карте"}
-                      onClick={() => onToggleMapFlight(flight.id)}
-                      type="button"
-                    >
-                      <MapPin aria-hidden="true" size={13} />
-                      {mapVisible ? "На карте" : "Скрыт"}
-                    </button>
-                  </span>
                   {hasAlert && <em className="indicator-alert">{categoryLabels.ALERT}</em>}
                   {hasWarning && <em className="indicator-warning">{categoryLabels.WARNING}</em>}
                   {hasUnreadChat && <em className="indicator-chat">CHAT</em>}

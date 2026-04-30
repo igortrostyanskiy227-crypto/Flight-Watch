@@ -631,6 +631,45 @@ button {
   font-weight: 760;
 }
 
+.flight-card__topline .flight-card__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.flight-card__label > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.flight-card__map-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.flight-card__map-toggle:hover,
+.flight-card__map-toggle:focus-visible {
+  background: rgba(148, 164, 189, 0.12);
+  color: var(--text);
+  outline: none;
+}
+
+.flight-card__map-toggle.is-visible {
+  color: #9cd2ff;
+}
+
+.flight-card__map-toggle.is-hidden {
+  color: var(--muted-2);
+}
+
 .flight-card__topline small,
 .flight-card__aircraft,
 .flight-card__metrics small,
@@ -717,7 +756,6 @@ button {
   overflow-wrap: anywhere;
 }
 
-.flight-card__indicators button,
 .flight-card__indicators em {
   display: inline-flex;
   align-items: center;
@@ -731,15 +769,6 @@ button {
   font-size: 11px;
   font-style: normal;
   font-weight: 780;
-}
-
-.flight-card__indicators button {
-  cursor: pointer;
-}
-
-.flight-card__indicators .is-active button {
-  border-color: rgba(76, 159, 230, 0.38);
-  color: #9cd2ff;
 }
 
 .indicator-alert {
