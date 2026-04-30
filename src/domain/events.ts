@@ -17,14 +17,20 @@ function makeEvent(
   time: string,
   text: string,
   type: FlightEvent["type"],
+  details?: string,
 ): FlightEvent {
+  const point = getCurrentPoint(flight);
   return {
     id: eventId(flight, suffix),
     flightId: flight.id,
     type,
     severity,
+    category: severity === "critical" ? "ALERT" : severity === "warning" ? "WARNING" : "INFO",
     time,
     text,
+    details,
+    coordinates: { lat: point.lat, lng: point.lng },
+    read: severity === "info",
     source: "computed",
   };
 }
@@ -58,6 +64,7 @@ export function calculateFlightEvents(flight: Flight, now: Date): FlightEvent[] 
         flight.lastSignalAt,
         `Потеря связи: нет сигнала ${lastSignalAge} мин.`,
         "signal_loss",
+        "Борт не передает телеметрию дольше критического порога. Проверьте последний известный трек, связь с экипажем и смежные службы.",
       ),
     );
   } else if (lastSignalAge > SIGNAL_WARNING_MINUTES) {
@@ -69,6 +76,7 @@ export function calculateFlightEvents(flight: Flight, now: Date): FlightEvent[] 
         flight.lastSignalAt,
         `Нет связи с трекером ${lastSignalAge} мин.`,
         "signal_delay",
+        "Сигнал от трекера устарел. Нужна проверка качества связи и последней точки маршрута.",
       ),
     );
   }
@@ -82,6 +90,7 @@ export function calculateFlightEvents(flight: Flight, now: Date): FlightEvent[] 
         currentPoint.time,
         "Борт находится в одной точке более 10 мин.",
         "stationary",
+        "Фактические координаты не меняются в течение контрольного интервала. Рекомендуется проверить скорость, высоту и статус посадки.",
       ),
     );
   }
@@ -95,13 +104,22 @@ export function calculateFlightEvents(flight: Flight, now: Date): FlightEvent[] 
         flight.lastSignalAt,
         "Посадка не подтверждена оператором.",
         "landing_unconfirmed",
+        "Трекер передал посадочные параметры, но подтверждение оператора отсутствует.",
       ),
     );
   }
 
   if (flight.sos) {
     computed.push(
-      makeEvent(flight, "sos", "critical", flight.lastSignalAt, "SOS с бортового трекера.", "sos"),
+      makeEvent(
+        flight,
+        "sos",
+        "critical",
+        flight.lastSignalAt,
+        "SOS с бортового трекера.",
+        "sos",
+        "Получен аварийный сигнал с бортового трекера. Требуется немедленная фиксация прочтения и запуск процедуры реагирования.",
+      ),
     );
   }
 
@@ -114,6 +132,7 @@ export function calculateFlightEvents(flight: Flight, now: Date): FlightEvent[] 
         flight.lastSignalAt,
         `Отклонение от плана ${flight.actual.deviationNm.toFixed(1)} NM.`,
         "plan_deviation",
+        "Фактический трек вышел за допустимое отклонение от планового маршрута. Для пространственного анализа откройте событие на карте.",
       ),
     );
   }

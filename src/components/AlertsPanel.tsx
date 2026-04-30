@@ -1,4 +1,5 @@
 import { useState, type PointerEvent as ReactPointerEvent } from "react";
+import { Check, Circle, Eye, MapPinned } from "lucide-react";
 import { formatClock, getFlightLabel } from "../domain/flightUtils";
 import { severityLabels } from "../domain/labels";
 import type { Flight, FlightEvent } from "../types";
@@ -6,10 +7,12 @@ import type { Flight, FlightEvent } from "../types";
 interface AlertsPanelProps {
   events: FlightEvent[];
   flightsById: Map<string, Flight>;
+  onMarkRead: (eventId: string) => void;
+  onOpenEvent: (event: FlightEvent) => void;
   onSelectFlight: (flightId: string) => void;
 }
 
-export function AlertsPanel({ events, flightsById, onSelectFlight }: AlertsPanelProps) {
+export function AlertsPanel({ events, flightsById, onMarkRead, onOpenEvent, onSelectFlight }: AlertsPanelProps) {
   const [panelHeight, setPanelHeight] = useState(178);
   const criticalCount = events.filter((event) => event.severity === "critical").length;
   const warningCount = events.filter((event) => event.severity === "warning").length;
@@ -67,20 +70,35 @@ export function AlertsPanel({ events, flightsById, onSelectFlight }: AlertsPanel
         {events.length === 0 ? (
           <div className="empty-inline">Нет событий в текущем отображении.</div>
         ) : (
-          events.slice(0, 8).map((event) => {
+          events.slice(0, 10).map((event) => {
             const flight = flightsById.get(event.flightId);
 
             return (
               <button
-                className={`alert-row severity-${event.severity}`}
+                className={`alert-row severity-${event.severity} ${event.read ? "is-read" : "is-unread"}`}
                 key={event.id}
-                onClick={() => onSelectFlight(event.flightId)}
+                onClick={() => onOpenEvent(event)}
                 type="button"
               >
+                <span className="read-state" aria-label={event.read ? "Прочитано" : "Не прочитано"}>
+                  {event.read ? <Check aria-hidden="true" size={13} /> : <Circle aria-hidden="true" size={10} fill="currentColor" />}
+                </span>
                 <span>{formatClock(event.time)}</span>
                 <strong>{flight ? getFlightLabel(flight) : event.flightId}</strong>
                 <em>{severityLabels[event.severity]}</em>
                 <p>{event.text}</p>
+                <span className="alert-row__actions" onClick={(click) => click.stopPropagation()}>
+                  <button onClick={() => onSelectFlight(event.flightId)} type="button">
+                    <MapPinned aria-hidden="true" size={13} />
+                    Рейс
+                  </button>
+                  {!event.read && (
+                    <button onClick={() => onMarkRead(event.id)} type="button">
+                      <Eye aria-hidden="true" size={13} />
+                      Прочитать
+                    </button>
+                  )}
+                </span>
               </button>
             );
           })
