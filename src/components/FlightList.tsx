@@ -115,11 +115,9 @@ export function FlightList({
         <div className="map-bulk-actions">
           <button aria-label={`Показать отфильтрованные ${objectLabel} на карте`} onClick={onShowFilteredFlights} type="button">
             <Eye aria-hidden="true" size={16} />
-            Показать
           </button>
           <button aria-label={`Скрыть отфильтрованные ${objectLabel} с карты`} onClick={onHideFilteredFlights} type="button">
             <EyeOff aria-hidden="true" size={16} />
-            Скрыть
           </button>
         </div>
       </div>
