@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface PilotControlsProps {
   flightLabel: string;
@@ -8,21 +9,35 @@ export function PilotControls({ flightLabel }: PilotControlsProps) {
   const [message, setMessage] = useState("Канал пилота не активен");
 
   return (
-    <section className="pilot-controls" aria-label="Pilot controls">
-      <div>
-        <h3>Pilot controls</h3>
-        <p>{message}</p>
-      </div>
-      <div className="pilot-controls__buttons">
-        <button onClick={() => setMessage(`${flightLabel}: запрос старта отправлен`)} type="button">
+    <section className="rounded-md border border-line bg-panel p-3" aria-label="Pilot controls">
+      <h3 className="m-0 mb-0.5 text-[12px] font-semibold text-fw-text">Pilot controls</h3>
+      <p className="m-0 mb-2 text-[11px] text-fw-muted">{message}</p>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setMessage(`${flightLabel}: запрос старта отправлен`)}
+          type="button"
+        >
           Начать полёт
-        </button>
-        <button onClick={() => setMessage(`${flightLabel}: запрос завершения отправлен`)} type="button">
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setMessage(`${flightLabel}: запрос завершения отправлен`)}
+          type="button"
+        >
           Завершить
-        </button>
-        <button className="sos-button" onClick={() => setMessage(`${flightLabel}: SOS подготовлен`)} type="button">
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          className="font-bold tracking-wider"
+          onClick={() => setMessage(`${flightLabel}: SOS подготовлен`)}
+          type="button"
+        >
           SOS
-        </button>
+        </Button>
       </div>
     </section>
   );

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
 import { AlertsPanel } from "./components/AlertsPanel";
 import { DetailPanel } from "./components/DetailPanel";
 import { FlightList } from "./components/FlightList";
 import { MapView } from "./components/MapView";
 import { TopBar } from "./components/TopBar";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./components/ui/dialog";
 import { MOCK_NOW, mockFlights } from "./data/mockFlights";
 import { DEVIATION_WARNING_NM, calculateAllEvents, hasActiveAlarm } from "./domain/events";
 import { getCurrentPoint, getFlightLabel, minutesBetween } from "./domain/flightUtils";
@@ -287,12 +289,45 @@ export function App() {
   const [sort, setSort] = useState<FlightSort>("default");
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(mockFlights[0]?.id ?? null);
   const [selectedFromListAt, setSelectedFromListAt] = useState(0);
-  const [detailTab, setDetailTab] = useState<"summary" | "history" | "warnings" | "charts" | "aerodromes">("summary");
+  const [detailTab, setDetailTab] = useState<"summary" | "history" | "warnings" | "aerodromes">("summary");
   const [readEventIds, setReadEventIds] = useState<Set<string>>(() => new Set());
   const [dismissedEventIds, setDismissedEventIds] = useState<Set<string>>(() => new Set());
   const [criticalAutoOpenPaused, setCriticalAutoOpenPaused] = useState(false);
   const [mapVisibleFlightIds, setMapVisibleFlightIds] = useState<Set<string>>(() => new Set(mockFlights.map((flight) => flight.id)));
   const [openedEvent, setOpenedEvent] = useState<FlightEvent | null>(null);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(344);
+  const [rightPanelWidth, setRightPanelWidth] = useState(374);
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+  const [detailOverlayOpen, setDetailOverlayOpen] = useState(false);
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  const isTablet = windowWidth < 900;
+  const isMobile = windowWidth < 600;
+
+  useEffect(() => {
+    if (isTablet && selectedFlightId) setDetailOverlayOpen(true);
+  }, [selectedFlightId, isTablet]);
+
+  useEffect(() => {
+    if (!isTablet) {
+      setDetailOverlayOpen(false);
+      setLeftPanelCollapsed(false);
+    }
+  }, [isTablet]);
+
+  const tabletLeftWidth = leftPanelCollapsed ? 48 : Math.min(leftPanelWidth, 280);
+  const gridCols = isMobile
+    ? "1fr"
+    : isTablet
+      ? `${tabletLeftWidth}px 1fr`
+      : `${leftPanelWidth}px minmax(420px, 1fr) ${rightPanelWidth}px`;
+
   const [templates, setTemplates] = useState<FilterTemplate[]>([
     { id: "all-active", name: "Все активные", filters: initialFilters },
     { id: "warnings", name: "WARNING/ALERT", filters: { ...initialFilters, eventCategory: "WARNING" } },
@@ -465,7 +500,7 @@ export function App() {
         visibleFlightCount={visibleFlights.length}
       />
 
-      <main className="monitor-layout">
+      <main className="monitor-layout" style={{ gridTemplateColumns: gridCols }}>
         <FlightList
           chatMessages={chatMessages}
           eventsByFlight={eventsByFlight}
@@ -487,10 +522,14 @@ export function App() {
           onShowFilteredFlights={() => setFilteredFlightsMapVisibility(true)}
           onSortChange={setSort}
           onToggleMapFlight={toggleMapFlight}
+          onWidthChange={setLeftPanelWidth}
+          isCollapsed={isTablet ? leftPanelCollapsed : false}
+          onToggleCollapse={isTablet ? () => setLeftPanelCollapsed((v) => !v) : undefined}
           selectedFlightId={selectedFlightId}
           sort={sort}
           templates={templates}
           totalCount={flightsForMode.length}
+          width={leftPanelWidth}
         />
 
         <section className="map-stage" aria-label="Карта воздушной обстановки">
@@ -505,76 +544,147 @@ export function App() {
           <AlertsPanel
             events={visibleEvents}
             flightsById={flightsById}
+            mockNow={MOCK_NOW}
             onMarkRead={markEventRead}
             onOpenEvent={openEvent}
             onSelectFlight={setSelectedFlightId}
+            selectedFlight={selectedFlight}
           />
         </section>
 
-        <DetailPanel
-          chatMessages={chatMessages.filter((message) => message.flightId === selectedFlight?.id)}
-          events={selectedEvents}
-          flight={selectedFlight}
-          onOpenEvent={openEvent}
-          onTabChange={setDetailTab}
-          tab={detailTab}
-        />
+        {!isTablet && (
+          <DetailPanel
+            chatMessages={chatMessages.filter((message) => message.flightId === selectedFlight?.id)}
+            events={selectedEvents}
+            flight={selectedFlight}
+            onClose={undefined}
+            onOpenEvent={openEvent}
+            onTabChange={setDetailTab}
+            onWidthChange={setRightPanelWidth}
+            tab={detailTab}
+            width={rightPanelWidth}
+          />
+        )}
       </main>
 
-      {openedEvent && (
-        <div className="modal-backdrop modal-backdrop--center" role="presentation" onMouseDown={closeEventModal}>
-          <section className="event-modal" aria-label="Подробности сигнализации" onMouseDown={(event) => event.stopPropagation()}>
-            <header className={`event-modal__header severity-${openedEvent.severity}`}>
-              <div>
-                <span>{eventCategory(openedEvent)}</span>
-                <strong>{openedEventFlight ? getFlightLabel(openedEventFlight) : openedEvent.flightId}</strong>
+      {/* Tablet: DetailPanel as slide-over overlay */}
+      {isTablet && detailOverlayOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[499] bg-black/50"
+            onClick={() => setDetailOverlayOpen(false)}
+          />
+          <div
+            className="fixed right-0 top-0 bottom-0 z-[500] flex flex-col"
+            style={{ width: Math.min(rightPanelWidth, windowWidth * 0.92) }}
+          >
+            <DetailPanel
+              chatMessages={chatMessages.filter((message) => message.flightId === selectedFlight?.id)}
+              events={selectedEvents}
+              flight={selectedFlight}
+              onClose={() => setDetailOverlayOpen(false)}
+              onOpenEvent={openEvent}
+              onTabChange={setDetailTab}
+              onWidthChange={setRightPanelWidth}
+              tab={detailTab}
+              width={rightPanelWidth}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Mobile: show map-only + open list/detail buttons */}
+      {isMobile && (
+        <div className="fixed bottom-24 left-3 z-[410] flex gap-2">
+          <button
+            className="rounded-full bg-panel border border-line px-4 py-2 text-[12px] text-fw-text shadow-lg"
+            onClick={() => setDetailOverlayOpen(!detailOverlayOpen)}
+            type="button"
+          >
+            {detailOverlayOpen ? "Карта" : "Детали"}
+          </button>
+        </div>
+      )}
+
+      <Dialog open={openedEvent !== null} onOpenChange={(open) => { if (!open) closeEventModal(); }}>
+        {openedEvent && (
+          <DialogContent className="max-w-md" hideClose>
+            <DialogHeader className={
+              openedEvent.severity === "critical"
+                ? "bg-[rgba(255,82,100,0.1)] border-b-[rgba(255,82,100,0.3)]"
+                : openedEvent.severity === "warning"
+                ? "bg-[rgba(221,162,26,0.08)] border-b-[rgba(221,162,26,0.25)]"
+                : ""
+            }>
+              <div className="min-w-0 flex-1">
+                <Badge
+                  variant={openedEvent.severity === "critical" ? "critical" : openedEvent.severity === "warning" ? "warning" : "info"}
+                  className="mb-1"
+                >
+                  {eventCategory(openedEvent)}
+                </Badge>
+                <DialogTitle>
+                  {openedEventFlight ? getFlightLabel(openedEventFlight) : openedEvent.flightId}
+                </DialogTitle>
               </div>
-              <button aria-label="Закрыть" className="close-button" onClick={closeEventModal} type="button">
-                <X aria-hidden="true" size={18} />
-              </button>
-            </header>
-            <div className="event-modal__body">
-              <p className="event-modal__lead">{openedEvent.text}</p>
-              <p>{openedEvent.details ?? "Для события доступна карточка рейса, фактический трек и последние параметры на карте."}</p>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 text-fw-muted hover:text-fw-text"
+                aria-label="Закрыть"
+                onClick={closeEventModal}
+              >
+                ×
+              </Button>
+            </DialogHeader>
+
+            <div className="px-4 py-3 flex flex-col gap-3">
+              <p className="text-[13px] font-medium text-fw-text m-0">{openedEvent.text}</p>
+              <p className="text-[12px] text-fw-muted m-0">
+                {openedEvent.details ?? "Для события доступна карточка рейса, фактический трек и последние параметры на карте."}
+              </p>
+
               {openedEvent.coordinates && (
-                <div className="event-modal__coords">
-                  <span>Координаты события</span>
-                  <strong>
+                <div className="flex items-center justify-between rounded-md bg-panel-strong border border-line px-3 py-2 text-[12px]">
+                  <span className="text-fw-muted">Координаты события</span>
+                  <strong className="text-fw-text font-medium">
                     {openedEvent.coordinates.lat.toFixed(4)}, {openedEvent.coordinates.lng.toFixed(4)}
                   </strong>
                 </div>
               )}
+
               {openedEventFlight && (
-                <div className="event-modal__coords">
-                  <span>Последняя точка рейса</span>
-                  <strong>
+                <div className="flex items-center justify-between rounded-md bg-panel-strong border border-line px-3 py-2 text-[12px]">
+                  <span className="text-fw-muted">Последняя точка рейса</span>
+                  <strong className="text-fw-text font-medium">
                     {getCurrentPoint(openedEventFlight).altitudeFt.toLocaleString("ru-RU")} ft ·{" "}
                     {getCurrentPoint(openedEventFlight).speedKt} kt
                   </strong>
                 </div>
               )}
             </div>
-            <footer className="event-modal__footer">
-              <button
-                onClick={() => {
-                  markEventRead(openedEvent.id);
-                  setOpenedEvent(null);
-                }}
-                type="button"
-              >
-                Отметить прочитанным
-              </button>
-              <button
-                className="secondary-action"
+
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-fw-muted"
                 onClick={() => showEventFlightOnMap(openedEvent)}
                 type="button"
               >
                 Показать на карте
-              </button>
-            </footer>
-          </section>
-        </div>
-      )}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => { markEventRead(openedEvent.id); setOpenedEvent(null); }}
+                type="button"
+              >
+                Отметить прочитанным
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
