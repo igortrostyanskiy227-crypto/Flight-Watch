@@ -119,7 +119,7 @@ function FlightChart({ flight, mockNow }: { flight: Flight; mockNow: Date }) {
             transform: hPct > 0.65 ? "translateX(-100%)" : "translateX(6px)",
           }}
         >
-          <div className="text-fw-muted-2 mb-1">{formatClock(new Date(times[hoverIdx]))}</div>
+          <div className="text-fw-muted-2 mb-1">{formatClock(new Date(times[hoverIdx]).toISOString())}</div>
           <div className="text-fw-info">{Math.round(hP.altitudeFt).toLocaleString("ru-RU")} ft</div>
           <div className="text-fw-green">{Math.round(hP.speedKt)} kt · {Math.round(hP.headingDeg)}°</div>
         </div>
