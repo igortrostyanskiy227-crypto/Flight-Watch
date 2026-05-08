@@ -1,12 +1,568 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flight Watch</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Союзгидравлика — Термообработка</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Times+New+Roman&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --obsidian: #000000;
+    --canvas: #ffffff;
+    --graphite: #141414;
+    --powder: #efefef;
+    --ash: #777777;
+    --stone: #cecece;
+    --whisper: #b2b2b2;
+    --smoke: rgba(63, 63, 63, 0.4);
+
+    --font-display: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Times New Roman', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font-display);
+    color: var(--obsidian);
+    background: var(--canvas);
+    line-height: 1.17;
+  }
+
+  /* ─── TYPOGRAPHY ────────────────────────────────────── */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .h-display {
+    font-size: clamp(36px, 10vw, 87px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .h-lg {
+    font-size: 36px;
+    line-height: 1.17;
+    letter-spacing: -0.008em;
+  }
+  .h-md {
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .body-serif {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: normal;
+  }
+  .body-sm {
+    font-size: 12px;
+    line-height: 1.17;
+    letter-spacing: normal;
+  }
+  .caption {
+    font-size: 10px;
+    line-height: 1.17;
+    letter-spacing: normal;
+  }
+
+  /* ─── LAYOUT ────────────────────────────────────────── */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 50px;
+  }
+  section {
+    padding: 100px 0;
+  }
+
+  /* ─── NAVBAR ────────────────────────────────────────── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--obsidian);
+    padding: 25px 0;
+  }
+  nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-brand {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 50px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    color: var(--obsidian);
+    transition: color 200ms;
+  }
+  .nav-links a:hover { color: var(--ash); }
+  .nav-cta {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    background: var(--obsidian);
+    color: var(--canvas);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
+  /* ─── HERO: DARK FULL-BLEED ────────────────────────── */
+  .hero {
+    background: var(--obsidian);
+    color: var(--canvas);
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 100px 0;
+    padding-left: 50vw;
+    padding-right: 50vw;
+    display: grid;
+    align-items: center;
+    min-height: 100vh;
+    margin-top: -72px;
+    padding-top: 172px;
+  }
+  .hero .container {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 100px;
+    align-items: center;
+  }
+  .hero h1 {
+    color: var(--canvas);
+    margin-bottom: 30px;
+  }
+  .hero-desc {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--stone);
+    max-width: 480px;
+    margin-bottom: 40px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .btn {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 200ms;
+  }
+  .btn-solid {
+    background: var(--canvas);
+    color: var(--obsidian);
+  }
+  .btn-solid:hover {
+    background: var(--ash);
+    color: var(--canvas);
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--canvas);
+    color: var(--canvas);
+  }
+  .btn-ghost:hover {
+    background: var(--canvas);
+    color: var(--obsidian);
+  }
+  .hero-img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--graphite);
+  }
+  .hero-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ─── SERVICES: LIGHT SECTION WITH GRID ────────────── */
+  .services-section {
+    background: var(--canvas);
+  }
+  .services-section h2 {
+    margin-bottom: 68px;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    margin-bottom: 68px;
+  }
+  .service-card {
+    background: var(--powder);
+    border-radius: 4px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--obsidian);
+  }
+  .service-card.featured {
+    grid-column: span 6;
+    padding: 30px;
+    background: var(--obsidian);
+    color: var(--canvas);
+  }
+  .service-card.featured h3 {
+    color: var(--canvas);
+    margin-bottom: 12px;
+    font-size: 28px;
+  }
+  .service-card.featured p {
+    color: var(--stone);
+  }
+  .service-card:not(.featured) {
+    grid-column: span 3;
+    padding: 16px;
+    background: var(--graphite);
+  }
+  .service-card:not(.featured) h3 {
+    color: var(--canvas);
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .service-card:not(.featured) p {
+    color: var(--ash);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  /* ─── FEATURED: DARK + LIGHT OVERLAY ────────────────── */
+  .featured-section {
+    background: var(--obsidian);
+    color: var(--canvas);
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 100px 0;
+    padding-left: 50vw;
+    padding-right: 50vw;
+  }
+  .featured-section h2 {
+    color: var(--canvas);
+    margin-bottom: 68px;
+  }
+
+  .featured-layout {
+    position: relative;
+    height: 500px;
+  }
+  .featured-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 60%;
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--graphite);
+  }
+  .featured-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .featured-text {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 55%;
+    background: var(--canvas);
+    color: var(--obsidian);
+    padding: 40px;
+    border-radius: 4px;
+    border: 1px solid var(--obsidian);
+  }
+  .featured-text h3 {
+    font-size: 32px;
+    margin-bottom: 16px;
+    color: var(--obsidian);
+  }
+  .featured-text p {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ash);
+    margin-bottom: 24px;
+  }
+
+  /* ─── STATS: LIGHT SECTION ──────────────────────────── */
+  .stats-section {
+    background: var(--canvas);
+  }
+  .stats-section h2 {
+    margin-bottom: 68px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 34px;
+  }
+  .stat {
+    border-top: 1px solid var(--obsidian);
+    padding-top: 25px;
+  }
+  .stat-num {
+    font-size: 54px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: var(--obsidian);
+  }
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    color: var(--ash);
+  }
+
+  /* ─── FOOTER ────────────────────────────────────────── */
+  footer {
+    background: var(--graphite);
+    color: var(--canvas);
+    padding: 68px 0;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding-left: 50vw;
+    padding-right: 50vw;
+    border-top: 1px solid var(--obsidian);
+  }
+  footer .container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 50px;
+  }
+  .footer-col h4 {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    margin-bottom: 20px;
+    color: var(--canvas);
+  }
+  .footer-col ul {
+    list-style: none;
+  }
+  .footer-col li {
+    margin-bottom: 8px;
+  }
+  .footer-col a {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ash);
+    transition: color 200ms;
+  }
+  .footer-col a:hover {
+    color: var(--canvas);
+  }
+
+  /* ─── RESPONSIVE ────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .container { padding: 0 30px; }
+    .hero .container { grid-template-columns: 1fr; gap: 40px; }
+    .hero-img { display: none; }
+    .service-grid { gap: 12px; }
+    .service-card { grid-column: span 6 !important; }
+    .featured-img { width: 100%; }
+    .featured-text { width: 100%; position: static; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    footer .container { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+    section { padding: 50px 0; }
+    .h-display { font-size: 36px; }
+    .hero { padding: 80px 0; }
+    .nav-links { display: none; }
+    .service-card { grid-column: span 12 !important; }
+    .stats-grid { grid-template-columns: 1fr; }
+    footer .container { grid-template-columns: 1fr; }
+    .featured-text { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="container">
+    <div class="nav-brand">Союзгидравлика</div>
+    <ul class="nav-links">
+      <li><a href="#services">Услуги</a></li>
+      <li><a href="#process">Процесс</a></li>
+      <li><a href="#about">О заводе</a></li>
+    </ul>
+    <button class="nav-cta">Запрос КП</button>
+  </div>
+</nav>
+
+<!-- HERO DARK -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <h1 class="h-display">Деталь должна выдержать. Мы за это отвечаем.</h1>
+      <p class="hero-desc">Термообработка и цементация металлических деталей по вашим чертежам. На производственных мощностях Союзгидравлика, Белгород. Работаем с промышленными предприятиями Беларуси и России по кооперации.</p>
+      <div class="hero-actions">
+        <button class="btn btn-solid">Отправить чертёж</button>
+        <button class="btn btn-ghost">Узнать подробнее</button>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img id="hero-img" src="" alt="Производство">
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES LIGHT -->
+<section class="services-section" id="services">
+  <div class="container">
+    <h2 class="h-lg">Услуги</h2>
+    <div class="service-grid">
+      <div class="service-card featured">
+        <h3>Объёмная закалка с отпуском</h3>
+        <p class="body-serif">Повышение твёрдости и прочности по всему сечению детали. Для зубчатых колёс, валов, шестерён, втулок. Стали: 40Х, 40ХН, 45, ШХ15 и другие конструкционные.</p>
+      </div>
+      <div class="service-card featured">
+        <h3>Цементация</h3>
+        <p class="body-serif">Насыщение поверхностного слоя углеродом с последующей закалкой. Твёрдая поверхность — вязкая сердцевина. Для деталей с ударной и контактной нагрузкой. Глубина слоя: 0,3–2,0 мм.</p>
+      </div>
+      <div class="service-card">
+        <h3>Нормализация</h3>
+        <p>Улучшение структуры металла после литья, ковки, сварки. Снимает внутренние напряжения, выравнивает зерно, готовит деталь к финишной обработке.</p>
+      </div>
+      <div class="service-card">
+        <h3>Отжиг</h3>
+        <p>Снижение твёрдости перед механообработкой, снятие напряжений, стабилизация размеров. Полный, неполный, рекристаллизационный.</p>
+      </div>
+      <div class="service-card">
+        <h3>Улучшение</h3>
+        <p>Закалка + высокий отпуск. Оптимальное сочетание прочности и пластичности для ответственных нагруженных деталей.</p>
+      </div>
+      <div class="service-card">
+        <h3>Контроль твёрдости</h3>
+        <p>Замер каждой партии по Роквеллу и Бринеллю. Протокол прилагается. Отклонение от ТЗ — основание для повторной обработки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED DARK -->
+<section class="featured-section" id="process">
+  <div class="container">
+    <h2 class="h-lg">Как мы работаем</h2>
+    <div class="featured-layout">
+      <div class="featured-img">
+        <img id="process-img" src="" alt="Процесс">
+      </div>
+      <div class="featured-text">
+        <h3>Технолог подбирает режим под вашу деталь</h3>
+        <p>Перед запуском партии специалист изучает марку стали, чертёж и требования к твёрдости. Режим согласовывается — не назначается по умолчанию. КП — за 1 рабочий день. Пришлите чертёж или техзадание, и технолог оценит реализуемость без затяжных согласований.</p>
+        <button class="btn btn-solid">Запросить КП</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS LIGHT -->
+<section class="stats-section" id="about">
+  <div class="container">
+    <h2 class="h-lg">Союзгидравлика</h2>
+    <p class="body-serif" style="max-width: 800px; margin-bottom: 68px; color: var(--ash);">Российский производитель гидроцилиндров для сельскохозяйственной, дорожно-строительной и специальной техники. Работаем с 2000 года. Термообработка — часть нашего собственного производственного цикла, не дополнительная услуга. Сертификаты: ISO 9001, IATF 16949, ТР ТС 010/2011.</p>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num">25+</div>
+        <div class="stat-label">Лет в машиностроении</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">515K+</div>
+        <div class="stat-label">Выпущенных изделий</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Компаний-партнёров</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1000+</div>
+        <div class="stat-label">Конструктивных решений</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-col">
+      <h4>Услуги</h4>
+      <ul>
+        <li><a href="#">Объёмная закалка</a></li>
+        <li><a href="#">Цементация</a></li>
+        <li><a href="#">Нормализация</a></li>
+        <li><a href="#">Отжиг</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Компания</h4>
+      <ul>
+        <li><a href="#">О заводе</a></li>
+        <li><a href="#">Кейсы</a></li>
+        <li><a href="#">Контакты</a></li>
+        <li><a href="#">Блог</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <ul>
+        <li><a href="#">hello@soyuz.ru</a></li>
+        <li><a href="#">+7 (473) 222-00-00</a></li>
+        <li><a href="#">Белгород</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Сертификаты</h4>
+      <ul>
+        <li><a href="#">ISO 9001</a></li>
+        <li><a href="#">IATF 16949</a></li>
+        <li><a href="#">ТР ТС 010/2011</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Image generation disabled for GitHub Pages deployment
+  // Images should be added as static assets or via an external CDN
+</script>
+
+</body>
 </html>
