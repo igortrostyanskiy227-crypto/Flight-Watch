@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Союзгидравлика — Термообработка металлов по кооперации</title>
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────────────── */
+  :root {
+    --primary:    #0A0A0A;
+    --secondary:  #6B6B6B;
+    --tertiary:   #ABABAB;
+    --border:     #E0E0E0;
+    --surface:    #F5F5F3;
+    --bg:         #FFFFFF;
+    --accent:     #C8102E;
+
+    --4:   4px;
+    --8:   8px;
+    --16:  16px;
+    --24:  24px;
+    --32:  32px;
+    --48:  48px;
+    --64:  64px;
+    --80:  80px;
+    --96:  96px;
+    --128: 128px;
+    --160: 160px;
+    --200: 200px;
+  }
+
+  /* ─── RESET ──────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: system-ui, -apple-system, "Inter", sans-serif;
+    font-weight: 400;
+    color: var(--primary);
+    background: var(--bg);
+    line-height: 1.65;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  table { border-collapse: collapse; width: 100%; }
+
+  /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+  .t-display {
+    font-size: 96px; line-height: 0.92; letter-spacing: -0.03em; font-weight: 400;
+  }
+  .t-h1 {
+    font-size: 64px; line-height: 0.96; letter-spacing: -0.02em; font-weight: 400;
+  }
+  .t-h2 {
+    font-size: 48px; line-height: 1.0; letter-spacing: -0.015em; font-weight: 400;
+  }
+  .t-h3 {
+    font-size: 32px; line-height: 1.1; letter-spacing: -0.01em; font-weight: 500;
+  }
+  .t-h4 {
+    font-size: 24px; line-height: 1.2; letter-spacing: 0; font-weight: 500;
+  }
+  .t-body {
+    font-size: 16px; line-height: 1.65; letter-spacing: 0; font-weight: 400;
+  }
+  .t-small {
+    font-size: 13px; line-height: 1.5; letter-spacing: 0; font-weight: 400;
+  }
+  .t-caption {
+    font-size: 11px; line-height: 1.4; letter-spacing: 0.06em;
+    text-transform: uppercase; font-weight: 500;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────────────── */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--48);
+  }
+  .section-pad {
+    padding-top: var(--96);
+    padding-bottom: var(--96);
+  }
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+  }
+
+  /* ─── TAG LABEL ──────────────────────────────────────────────── */
+  .tag-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--8);
+    color: var(--secondary);
+  }
+  .tag-label::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--secondary);
+    flex-shrink: 0;
+  }
+
+  /* ─── SECTION MARKER ─────────────────────────────────────────── */
+  .section-marker {
+    font-size: 128px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    color: var(--border);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ─── NAVBAR ─────────────────────────────────────────────────── */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--12, 12px);
+  }
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 16px; height: 16px; fill: #fff; }
+  .logo-wordmark {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--32);
+    list-style: none;
+  }
+  .navbar-nav a {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    transition: color 150ms;
+  }
+  .navbar-nav a:hover { color: var(--primary); }
+  .navbar-cta {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 0.5px solid var(--accent);
+    padding: var(--8) var(--16);
+    transition: background 150ms, color 150ms;
+  }
+  .navbar-cta:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ─── HERO ───────────────────────────────────────────────────── */
+  .hero {
+    padding-top: var(--160);
+    padding-bottom: var(--160);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: var(--32);
+    align-items: end;
+  }
+  .hero-eyebrow {
+    margin-bottom: var(--32);
+  }
+  .hero-headline {
+    margin-bottom: var(--48);
+  }
+  .hero-body {
+    color: var(--secondary);
+    max-width: 480px;
+    margin-bottom: var(--48);
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--24);
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--8);
+    background: var(--accent);
+    color: #fff;
+    padding: 14px var(--32);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: opacity 150ms;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--8);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    transition: color 150ms;
+  }
+  .btn-text:hover { color: var(--primary); }
+  .btn-text::after { content: '→'; }
+
+  .hero-aside {
+    padding-bottom: 8px;
+  }
+  .hero-stats-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--32);
+  }
+  .hero-stat-item {
+    border-top: 0.5px solid var(--border);
+    padding-top: var(--24);
+  }
+  .hero-stat-number {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin-bottom: var(--8);
+  }
+
+  /* ─── INTRO (3+9) ────────────────────────────────────────────── */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: var(--32);
+  }
+  .intro-label-col {
+    padding-top: 6px;
+  }
+  .intro-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--32);
+    margin-top: var(--48);
+  }
+  .intro-lead {
+    grid-column: 1 / -1;
+    max-width: 640px;
+    color: var(--secondary);
+    margin-top: var(--24);
+  }
+  .feature-item {
+    border-top: 0.5px solid var(--border);
+    padding-top: var(--24);
+  }
+  .feature-title {
+    margin-bottom: var(--16);
+  }
+  .feature-body {
+    color: var(--secondary);
+  }
+
+  /* ─── SERVICES ───────────────────────────────────────────────── */
+  .services-header {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: var(--32);
+    margin-bottom: var(--64);
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 0.5px solid var(--border);
+    border-left: 0.5px solid var(--border);
+  }
+  .service-card {
+    border-right: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: var(--32);
+  }
+  .service-num {
+    color: var(--tertiary);
+    margin-bottom: var(--24);
+    display: block;
+  }
+  .service-title {
+    margin-bottom: var(--16);
+  }
+  .service-body {
+    color: var(--secondary);
+    margin-bottom: var(--16);
+  }
+  .service-tag {
+    color: var(--tertiary);
+  }
+
+  /* ─── WHY US ──────────────────────────────────────────────────── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: 4fr 8fr;
+    gap: var(--32);
+  }
+  .why-sticky {
+    position: sticky;
+    top: 88px;
+    align-self: start;
+  }
+  .why-items {
+    display: flex;
+    flex-direction: column;
+  }
+  .why-item {
+    border-top: 0.5px solid var(--border);
+    padding: var(--32) 0;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: var(--32);
+  }
+  .why-index {
+    color: var(--tertiary);
+    padding-top: 4px;
+  }
+  .why-title {
+    margin-bottom: var(--16);
+  }
+  .why-body { color: var(--secondary); }
+
+  /* ─── PROCESS ─────────────────────────────────────────────────── */
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--64);
+  }
+  .process-step {
+    display: grid;
+    grid-template-columns: 64px 4fr 8fr;
+    gap: var(--32);
+    border-top: 0.5px solid var(--border);
+    padding: var(--32) 0;
+    align-items: start;
+  }
+  .process-num {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 4px;
+  }
+  .process-title { }
+  .process-body { color: var(--secondary); }
+
+  /* ─── STATS / ABOUT ───────────────────────────────────────────── */
+  .about-section {
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: var(--64);
+    align-items: center;
+  }
+  .stats-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--32);
+    border-top: 0.5px solid var(--border);
+    padding-top: var(--32);
+    margin-top: var(--32);
+  }
+  .stat-card {
+    border-top: 0.5px solid var(--border);
+    padding-top: var(--16);
+  }
+  .stat-number {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin-bottom: var(--4);
+  }
+  .about-text { color: var(--secondary); margin-top: var(--24); }
+  .cert-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--8);
+    margin-top: var(--32);
+    list-style: none;
+  }
+  .cert-tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    border: 0.5px solid var(--border);
+    padding: var(--4) var(--12, 12px);
+  }
+  .about-marker {
+    position: absolute;
+    right: -32px;
+    bottom: -32px;
+    font-size: 320px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--border);
+    font-weight: 400;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.6;
+  }
+
+  /* ─── TABLE ──────────────────────────────────────────────────── */
+  .table-section {}
+  .table-header {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: var(--32);
+    margin-bottom: var(--48);
+  }
+  .specs-table th,
+  .specs-table td {
+    text-align: left;
+    padding: var(--16) var(--24);
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: top;
+  }
+  .specs-table th {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .specs-table td {
+    font-size: 14px;
+    color: var(--primary);
+  }
+  .specs-table td:first-child {
+    font-weight: 500;
+    color: var(--primary);
+  }
+  .specs-table tr:last-child td { border-bottom: none; }
+  .table-note {
+    margin-top: var(--16);
+    color: var(--tertiary);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--8);
+  }
+
+  /* ─── CASE STUDY ─────────────────────────────────────────────── */
+  .case-section {
+    background: var(--primary);
+    color: var(--bg);
+  }
+  .case-section .divider { border-color: #2A2A2A; }
+  .case-section .tag-label { color: #6B6B6B; }
+  .case-section .tag-label::before { background: #6B6B6B; }
+  .case-header {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: var(--32);
+    margin-bottom: var(--64);
+    align-items: end;
+  }
+  .case-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--32);
+    margin-bottom: var(--64);
+  }
+  .case-metric {
+    border-top: 0.5px solid #2A2A2A;
+    padding-top: var(--24);
+  }
+  .case-metric-label {
+    color: #6B6B6B;
+    margin-bottom: var(--8);
+  }
+  .case-metric-value {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin-bottom: var(--8);
+  }
+  .case-metric-sub { color: #6B6B6B; }
+  .case-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--32);
+    border-top: 0.5px solid #2A2A2A;
+    padding-top: var(--48);
+  }
+  .case-col-label {
+    color: #6B6B6B;
+    margin-bottom: var(--16);
+  }
+  .case-col-body { color: #ABABAB; }
+  .case-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--8);
+    margin-top: var(--48);
+    padding-top: var(--32);
+    border-top: 0.5px solid #2A2A2A;
+  }
+  .case-tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+    border: 0.5px solid #2A2A2A;
+    padding: var(--4) var(--12, 12px);
+  }
+
+  /* ─── WHO WE SERVE ───────────────────────────────────────────── */
+  .serve-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 0.5px solid var(--border);
+    border-left: 0.5px solid var(--border);
+    margin-top: var(--48);
+  }
+  .serve-card {
+    border-right: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: var(--32);
+  }
+  .serve-num {
+    color: var(--tertiary);
+    margin-bottom: var(--24);
+    display: block;
+  }
+  .serve-title { margin-bottom: var(--16); }
+  .serve-body { color: var(--secondary); }
+
+  /* ─── CTA / FORM ─────────────────────────────────────────────── */
+  .cta-section {}
+  .cta-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: var(--64);
+    align-items: start;
+  }
+  .cta-headline { margin-bottom: var(--24); }
+  .cta-body { color: var(--secondary); margin-bottom: var(--32); }
+  .cta-contact-block { margin-top: var(--48); }
+  .contact-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--16);
+    padding: var(--16) 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .contact-row:first-child { border-top: 0.5px solid var(--border); }
+  .contact-key { color: var(--tertiary); min-width: 80px; }
+  .contact-val { color: var(--primary); }
+  .form-block { }
+  .form-row { margin-bottom: var(--24); }
+  .form-row label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin-bottom: var(--8);
+  }
+  .form-row input,
+  .form-row textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 0.5px solid var(--border);
+    padding: var(--12, 12px) 0;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--primary);
+    outline: none;
+    transition: border-color 150ms;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+    resize: none;
+  }
+  .form-row input:focus,
+  .form-row textarea:focus { border-color: var(--primary); }
+  .form-row input::placeholder,
+  .form-row textarea::placeholder { color: var(--tertiary); }
+  .form-row textarea { min-height: 80px; }
+  .form-upload {
+    display: flex;
+    align-items: center;
+    gap: var(--12, 12px);
+    padding: var(--16) 0;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 13px;
+    transition: color 150ms;
+  }
+  .form-upload:hover { color: var(--primary); }
+  .form-upload-icon {
+    width: 20px;
+    height: 20px;
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--tertiary);
+  }
+  .form-upload input[type="file"] { display: none; }
+  .form-submit {
+    margin-top: var(--32);
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 16px var(--32);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 150ms;
+  }
+  .form-submit:hover { opacity: 0.88; }
+  .form-note {
+    margin-top: var(--16);
+    color: var(--tertiary);
+    text-align: center;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────────────── */
+  .footer {
+    border-top: 0.5px solid var(--border);
+    padding: var(--48) 0;
+  }
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 3fr 3fr 3fr 3fr;
+    gap: var(--32);
+    align-items: start;
+  }
+  .footer-brand-name {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: var(--8);
+  }
+  .footer-brand-sub { color: var(--tertiary); }
+  .footer-col-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tertiary);
+    margin-bottom: var(--16);
+  }
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--8);
+  }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--secondary);
+    transition: color 150ms;
+  }
+  .footer-links a:hover { color: var(--primary); }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--48);
+    padding-top: var(--24);
+    border-top: 0.5px solid var(--border);
+  }
+  .footer-legal { color: var(--tertiary); }
+
+  /* ─── SECTION DIVIDER COMPONENT ──────────────────────────────── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--24);
+  }
+  .section-divider-line {
+    flex: 1;
+    border-top: 0.5px solid var(--border);
+  }
+  .section-divider-label { color: var(--tertiary); }
+
+  /* ─── RESPONSIVE (basic) ──────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .container { padding: 0 var(--32); }
+    .t-display { font-size: 72px; }
+    .t-h1 { font-size: 48px; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-aside { display: none; }
+    .intro-grid { grid-template-columns: 1fr; }
+    .intro-content { grid-template-columns: 1fr 1fr; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .why-sticky { position: static; }
+    .about-grid { grid-template-columns: 1fr; }
+    .case-body-grid { grid-template-columns: 1fr 1fr; }
+    .serve-grid { grid-template-columns: 1fr 1fr; }
+    .cta-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .services-header { grid-template-columns: 1fr; }
+    .table-header { grid-template-columns: 1fr; }
+    .case-header { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 var(--24); }
+    .t-display { font-size: 48px; }
+    .t-h1 { font-size: 36px; }
+    .t-h2 { font-size: 32px; }
+    .navbar-nav { display: none; }
+    .hero { padding-top: var(--96); padding-bottom: var(--96); }
+    .intro-content { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .process-step { grid-template-columns: 40px 1fr; }
+    .process-body { grid-column: 2; }
+    .case-metrics { grid-template-columns: 1fr 1fr; }
+    .case-body-grid { grid-template-columns: 1fr; }
+    .serve-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <div class="navbar-logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 1.5A4.5 4.5 0 0 1 12.5 8 4.5 4.5 0 0 1 8 12.5 4.5 4.5 0 0 1 3.5 8 4.5 4.5 0 0 1 8 3.5zm0 1.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+          </svg>
+        </div>
+        <span class="logo-wordmark">Союзгидравлика</span>
+      </div>
+      <ul class="navbar-nav">
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#process">Как работаем</a></li>
+        <li><a href="#about">О заводе</a></li>
+        <li><a href="#case">Кейс</a></li>
+      </ul>
+      <a href="#cta" class="navbar-cta t-caption">Отправить чертёж</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="tag-label t-caption">Российский производитель гидравлики</span>
+        </div>
+        <h1 class="t-display hero-headline">
+          Деталь<br>должна<br>выдержать.
+        </h1>
+        <p class="t-body hero-body">
+          Термообработка и цементация металлических деталей по вашим чертежам.
+          На собственных производственных мощностях Союзгидравлика.
+          Работаем с промышленными предприятиями России по кооперации.
+        </p>
+        <div class="hero-actions">
+          <a href="#cta" class="btn-primary">
+            Отправить чертёж
+          </a>
+          <a href="#services" class="btn-text">Узнать об услугах</a>
+        </div>
+      </div>
+      <div class="hero-aside">
+        <div class="hero-stats-row">
+          <div class="hero-stat-item">
+            <div class="hero-stat-number">515 000+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Выпущенных изделий</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-number">25+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Лет в машиностроении</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-number">120+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Компаний-партнёров</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ INTRO: WHY HEAT TREATMENT -->
+<section class="section-pad" id="intro">
+  <div class="container">
+    <div class="intro-grid">
+      <div class="intro-label-col">
+        <span class="tag-label t-caption">Контекст</span>
+      </div>
+      <div>
+        <h2 class="t-h2" style="max-width: 640px;">Почему термообработка —<br>не рядовая операция</h2>
+        <p class="t-body intro-lead">
+          Неверно подобранный режим — и деталь уходит на переделку. Задержка на термоучастке — и срывается вся производственная цепочка. Мы строим работу так, чтобы этого не происходило.
+        </p>
+      </div>
+    </div>
+
+    <div class="intro-content">
+      <div class="feature-item">
+        <h4 class="t-h4 feature-title">Режим — под конкретную марку стали</h4>
+        <p class="t-body feature-body">
+          Универсального «нагрел — охладил» не существует. Для каждого материала технолог определяет температуру, среду охлаждения и время выдержки индивидуально.
+        </p>
+      </div>
+      <div class="feature-item">
+        <h4 class="t-h4 feature-title">Деформация — главный риск после механообработки</h4>
+        <p class="t-body feature-body">
+          Неправильная термичка сводит на нет всю предыдущую обработку. Мы согласовываем допуски до запуска партии.
+        </p>
+      </div>
+      <div class="feature-item">
+        <h4 class="t-h4 feature-title">Сроки нельзя переносить</h4>
+        <p class="t-body feature-body">
+          Термоучасток — узкое место цепочки. Мы фиксируем срок в заявке и соблюдаем его. Результат подтверждается документально: твёрдость, глубина слоя.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ SERVICES -->
+<section class="section-pad" id="services">
+  <div class="container">
+    <div class="services-header">
+      <div>
+        <span class="tag-label t-caption">Услуги</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: end;">
+        <h2 class="t-h2">Что мы делаем</h2>
+        <a href="#cta" class="btn-text" style="flex-shrink: 0; margin-left: 32px;">Запросить КП</a>
+      </div>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <span class="service-num t-caption">01</span>
+        <h3 class="t-h4 service-title">Объёмная закалка с отпуском</h3>
+        <p class="t-small service-body">
+          Повышение твёрдости и прочности по всему сечению детали. Для зубчатых колёс, валов, шестерён, втулок.
+        </p>
+        <span class="t-caption service-tag">40Х · 40ХН · 45 · ШХ15</span>
+      </div>
+      <div class="service-card">
+        <span class="service-num t-caption">02</span>
+        <h3 class="t-h4 service-title">Цементация</h3>
+        <p class="t-small service-body">
+          Насыщение поверхностного слоя углеродом с закалкой. Твёрдая поверхность — вязкая сердцевина. Глубина слоя: 0,3–2,0 мм.
+        </p>
+        <span class="t-caption service-tag">20Х · 18ХГТ · 12ХН3А</span>
+      </div>
+      <div class="service-card">
+        <span class="service-num t-caption">03</span>
+        <h3 class="t-h4 service-title">Нормализация</h3>
+        <p class="t-small service-body">
+          Улучшение структуры металла после литья, ковки, сварки. Снимает внутренние напряжения, выравнивает зерно.
+        </p>
+        <span class="t-caption service-tag">Все конструкционные стали</span>
+      </div>
+      <div class="service-card">
+        <span class="service-num t-caption">04</span>
+        <h3 class="t-h4 service-title">Отжиг</h3>
+        <p class="t-small service-body">
+          Снижение твёрдости перед механообработкой, снятие напряжений, стабилизация размеров. Полный, неполный, рекристаллизационный.
+        </p>
+        <span class="t-caption service-tag">Конструкционные · Легированные</span>
+      </div>
+      <div class="service-card">
+        <span class="service-num t-caption">05</span>
+        <h3 class="t-h4 service-title">Улучшение (закалка + высокий отпуск)</h3>
+        <p class="t-small service-body">
+          Оптимальное сочетание прочности и пластичности для ответственных нагруженных деталей. Исключает хрупкое разрушение.
+        </p>
+        <span class="t-caption service-tag">40Х · 40ХН2МА · 30ХГСА</span>
+      </div>
+      <div class="service-card">
+        <span class="service-num t-caption">06</span>
+        <h3 class="t-h4 service-title">Контроль твёрдости</h3>
+        <p class="t-small service-body">
+          Замер каждой партии по Роквеллу и Бринеллю. Протокол прилагается. Отклонение от ТЗ — основание для повторной обработки.
+        </p>
+        <span class="t-caption service-tag">HRC · HB · Протокол контроля</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ WHY US -->
+<section class="section-pad" id="why">
+  <div class="container">
+    <div class="why-grid">
+      <div class="why-sticky">
+        <span class="tag-label t-caption" style="margin-bottom: 24px; display: inline-flex;">Почему мы</span>
+        <h2 class="t-h2" style="margin-top: 24px;">Что отличает нас<br>от аутсорсера</h2>
+        <p class="t-body" style="color: var(--secondary); margin-top: 24px; max-width: 280px;">
+          КП — за 1 рабочий день. Пришлите чертёж или техзадание, и технолог выдаст оценку без затяжных согласований.
+        </p>
+        <a href="#cta" class="btn-primary" style="margin-top: 32px; display: inline-flex;">Отправить чертёж</a>
+      </div>
+
+      <div class="why-items">
+        <div class="why-item">
+          <span class="t-caption why-index" style="padding-top: 4px;">01</span>
+          <div>
+            <h4 class="t-h4 why-title">Технолог подбирает режим под вашу деталь</h4>
+            <p class="t-body why-body">
+              Перед запуском партии специалист изучает марку стали, чертёж и требования к твёрдости. Режим согласовывается — не назначается по умолчанию.
+            </p>
+          </div>
+        </div>
+        <div class="why-item">
+          <span class="t-caption why-index" style="padding-top: 4px;">02</span>
+          <div>
+            <h4 class="t-h4 why-title">Замер твёрдости — обязательный этап, не опция</h4>
+            <p class="t-body why-body">
+              Каждая партия проходит контроль. Вы получаете протокол с фактическими значениями. Результат подтверждается документально.
+            </p>
+          </div>
+        </div>
+        <div class="why-item">
+          <span class="t-caption why-index" style="padding-top: 4px;">03</span>
+          <div>
+            <h4 class="t-h4 why-title">Собственное оборудование — контроль сроков</h4>
+            <p class="t-body why-body">
+              Мы не привлекаем субподрядчиков. Участок планируется под ваш срок. Никаких промежуточных звеньев в цепочке.
+            </p>
+          </div>
+        </div>
+        <div class="why-item">
+          <span class="t-caption why-index" style="padding-top: 4px;">04</span>
+          <div>
+            <h4 class="t-h4 why-title">Опыт производителя, а не цехового аутсорсера</h4>
+            <p class="t-body why-body">
+              Союзгидравлика выпустила более 515 000 гидроцилиндров с термообработанными деталями. Мы понимаем, как термичка влияет на ресурс изделия в целом — не только на твёрдость поверхности.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ PROCESS -->
+<section class="section-pad" id="process">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 3fr 9fr; gap: 32px;">
+      <div>
+        <span class="tag-label t-caption">Процесс</span>
+      </div>
+      <div>
+        <h2 class="t-h2">Как мы работаем</h2>
+      </div>
+    </div>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <span class="process-num">01</span>
+        <h4 class="t-h4 process-title">Заявка</h4>
+        <p class="t-body process-body">
+          Присылаете чертёж, марку стали и требования к твёрдости. Можно без чертежа — обсудим по описанию.
+        </p>
+      </div>
+      <div class="process-step">
+        <span class="process-num">02</span>
+        <h4 class="t-h4 process-title">Техническое согласование</h4>
+        <p class="t-body process-body">
+          Технолог проверяет реализуемость режима, уточняет параметры. При необходимости — звонок.
+        </p>
+      </div>
+      <div class="process-step">
+        <span class="process-num">03</span>
+        <h4 class="t-h4 process-title">КП и договор</h4>
+        <p class="t-body process-body">
+          Коммерческое предложение за 1 рабочий день. После подтверждения — договор или счёт.
+        </p>
+      </div>
+      <div class="process-step">
+        <span class="process-num">04</span>
+        <h4 class="t-h4 process-title">Обработка</h4>
+        <p class="t-body process-body">
+          Детали поступают на участок в согласованный день. Термообработка по утверждённому режиму.
+        </p>
+      </div>
+      <div class="process-step">
+        <span class="process-num">05</span>
+        <h4 class="t-h4 process-title">Контроль и выдача</h4>
+        <p class="t-body process-body">
+          Замер твёрдости, протокол, передача деталей. Документация входит в стоимость.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ ABOUT / STATS -->
+<section class="about-section section-pad" id="about">
+  <div class="container" style="position: relative; z-index: 1;">
+    <div class="about-grid">
+      <div>
+        <span class="tag-label t-caption" style="margin-bottom: 32px; display: inline-flex;">О заводе</span>
+        <h2 class="t-h2" style="margin-top: 32px;">Союзгидравлика</h2>
+        <p class="t-body about-text">
+          Российский производитель гидроцилиндров для сельскохозяйственной, дорожно-строительной и специальной техники. Работаем с 2000 года. Термообработка — часть нашего собственного производственного цикла, не дополнительная услуга.
+        </p>
+        <ul class="cert-list">
+          <li class="cert-tag">ISO 9001</li>
+          <li class="cert-tag">IATF 16949</li>
+          <li class="cert-tag">ТР ТС 010/2011</li>
+        </ul>
+      </div>
+      <div>
+        <div class="stats-block">
+          <div class="stat-card">
+            <div class="stat-number">25+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Лет в машиностроении</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">515K+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Выпущенных изделий</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">120+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Компаний-партнёров</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">1000+</div>
+            <div class="t-caption" style="color: var(--tertiary)">Конструктивных решений</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="about-marker" aria-hidden="true">25</div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ SPECS TABLE -->
+<section class="section-pad table-section" id="specs">
+  <div class="container">
+    <div class="table-header">
+      <div>
+        <span class="tag-label t-caption">Технические параметры</span>
+      </div>
+      <div>
+        <h2 class="t-h2" style="margin-bottom: 16px;">Параметры обрабатываемых деталей</h2>
+        <p class="t-body" style="color: var(--secondary); max-width: 560px;">
+          Технические ограничения термоучастка по видам обработки. Если ваша деталь выходит за указанные пределы — уточните у технолога: часть ограничений гибкая.
+        </p>
+      </div>
+    </div>
+
+    <div style="border: 0.5px solid var(--border);">
+      <table class="specs-table">
+        <thead>
+          <tr>
+            <th>Вид обработки</th>
+            <th>Макс. габарит</th>
+            <th>Макс. масса</th>
+            <th>Темп-ра, °C</th>
+            <th>Марки сталей</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Объёмная закалка</td>
+            <td>Ø до 300 мм, длина до 600 мм</td>
+            <td>до 50 кг</td>
+            <td>800–870</td>
+            <td>40Х, 40ХН, 45, У8–У12, ШХ15</td>
+          </tr>
+          <tr>
+            <td>Цементация</td>
+            <td>Ø до 250 мм, длина до 500 мм</td>
+            <td>до 30 кг</td>
+            <td>850–950</td>
+            <td>20Х, 18ХГТ, 12ХН3А, 20ХНМ</td>
+          </tr>
+          <tr>
+            <td>Нормализация</td>
+            <td>Ø до 400 мм, длина до 800 мм</td>
+            <td>до 80 кг</td>
+            <td>850–950</td>
+            <td>Все конструкционные</td>
+          </tr>
+          <tr>
+            <td>Отжиг</td>
+            <td>Ø до 400 мм, длина до 800 мм</td>
+            <td>до 80 кг</td>
+            <td>600–860</td>
+            <td>Конструкционные, легированные</td>
+          </tr>
+          <tr>
+            <td>Улучшение</td>
+            <td>Ø до 300 мм, длина до 600 мм</td>
+            <td>до 50 кг</td>
+            <td>830–870 (закалка)</td>
+            <td>40Х, 40ХН2МА, 30ХГСА</td>
+          </tr>
+          <tr>
+            <td>Отпуск (низкий)</td>
+            <td>Ø до 400 мм, длина до 800 мм</td>
+            <td>до 80 кг</td>
+            <td>150–250</td>
+            <td>После закалки / цементации</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-note t-small">
+      <span>⚠</span>
+      <span style="color: var(--tertiary);">Данные таблицы ориентировочные. Точные параметры уточняйте у технолога Союзгидравлика перед размещением заказа.</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ CASE STUDY -->
+<section class="case-section section-pad" id="case">
+  <div class="container">
+    <div class="case-header">
+      <div>
+        <span class="tag-label t-caption">Кейс</span>
+      </div>
+      <div>
+        <h2 class="t-h2" style="color: var(--bg); max-width: 640px;">
+          Шестерни привода для сельхозтехники: снижение брака по твёрдости с 12% до 0%
+        </h2>
+      </div>
+    </div>
+
+    <div class="case-metrics">
+      <div class="case-metric">
+        <div class="case-metric-label t-caption">До</div>
+        <div class="case-metric-value" style="color: var(--bg);">12%</div>
+        <div class="case-metric-sub t-small">Брак по твёрдости</div>
+      </div>
+      <div class="case-metric">
+        <div class="case-metric-label t-caption">После</div>
+        <div class="case-metric-value" style="color: var(--accent);">0%</div>
+        <div class="case-metric-sub t-small">Брак по твёрдости</div>
+      </div>
+      <div class="case-metric">
+        <div class="case-metric-label t-caption">Срок</div>
+        <div class="case-metric-value" style="color: var(--bg);">5</div>
+        <div class="case-metric-sub t-small">Рабочих дней</div>
+      </div>
+    </div>
+
+    <div class="case-body-grid">
+      <div>
+        <div class="case-col-label t-caption">Задача</div>
+        <p class="t-body case-col-body">
+          Предприятие производило шестерни привода для тракторов. Детали проходили цементацию у стороннего подрядчика, однако входной контроль твёрдости фиксировал стабильный брак около 12%: глубина слоя и HRC не укладывались в допуск чертежа. Переделка задерживала сборку на 7–10 дней.
+        </p>
+      </div>
+      <div>
+        <div class="case-col-label t-caption">Что сделали</div>
+        <p class="t-body case-col-body">
+          Технолог Союзгидравлика изучил чертёж и химсостав плавки. Прежний подрядчик использовал унифицированный режим без учёта фактического содержания углерода. Скорректировали температуру и время выдержки, подобрали режим закалки с охлаждением в масле и температуру отпуска. Первые три детали прошли контрольный срез — допуск выдержан.
+        </p>
+      </div>
+      <div>
+        <div class="case-col-label t-caption">Результат</div>
+        <p class="t-body case-col-body">
+          Брак по твёрдости — 0% по итогам трёх последовательных партий. Срок изготовления с момента передачи деталей — 5 рабочих дней. Заказчик перенёс весь объём цементации на Союзгидравлика.
+        </p>
+      </div>
+    </div>
+
+    <div class="case-tags">
+      <span class="case-tag">Сталь 18ХГТ</span>
+      <span class="case-tag">Цементация</span>
+      <span class="case-tag">Закалка</span>
+      <span class="case-tag">Низкий отпуск</span>
+      <span class="case-tag">Сельхозмашиностроение</span>
+      <span class="case-tag">Шестерни привода</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ WHO WE SERVE -->
+<section class="section-pad" id="serve">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 3fr 9fr; gap: 32px; margin-bottom: 0;">
+      <div>
+        <span class="tag-label t-caption">Кому подходим</span>
+      </div>
+      <div>
+        <h2 class="t-h2">Отрасли и задачи</h2>
+      </div>
+    </div>
+
+    <div class="serve-grid">
+      <div class="serve-card">
+        <span class="serve-num t-caption">01</span>
+        <h4 class="t-h4 serve-title">Сельхозмашиностроение</h4>
+        <p class="t-small serve-body">Шестерни, валы, втулки для комбайнов, тракторов, навесного оборудования.</p>
+      </div>
+      <div class="serve-card">
+        <span class="serve-num t-caption">02</span>
+        <h4 class="t-h4 serve-title">Дорожная и строительная техника</h4>
+        <p class="t-small serve-body">Детали гидравлических систем, ходовые элементы, пальцы и шарниры под высокую нагрузку.</p>
+      </div>
+      <div class="serve-card">
+        <span class="serve-num t-caption">03</span>
+        <h4 class="t-h4 serve-title">Общее машиностроение</h4>
+        <p class="t-small serve-body">Валы, зубчатые колёса, оси, штоки по чертежам заказчика. Любая конструкционная сталь.</p>
+      </div>
+      <div class="serve-card">
+        <span class="serve-num t-caption">04</span>
+        <h4 class="t-h4 serve-title">Инструментальное производство</h4>
+        <p class="t-small serve-body">Оснастка, пуансоны, матрицы из инструментальных сталей. Точные режимы отжига и закалки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════ CTA FORM -->
+<section class="section-pad" id="cta">
+  <div class="container">
+    <div class="cta-grid">
+      <div>
+        <span class="tag-label t-caption" style="margin-bottom: 32px; display: inline-flex;">Заявка</span>
+        <h2 class="t-h2 cta-headline" style="margin-top: 32px;">Обсудим<br>вашу задачу</h2>
+        <p class="t-body cta-body">
+          Пришлите чертёж или опишите деталь. Технолог ответит в течение 1 рабочего дня с оценкой реализуемости и предварительной стоимостью.
+        </p>
+        <p class="t-small" style="color: var(--tertiary);">Минимальная партия не ограничена.</p>
+
+        <div class="cta-contact-block">
+          <div class="contact-row">
+            <span class="t-caption contact-key">Адрес</span>
+            <span class="t-body contact-val">Белгород, Россия</span>
+          </div>
+          <div class="contact-row">
+            <span class="t-caption contact-key">Режим</span>
+            <span class="t-body contact-val">Пн–Пт, 8:00–17:00</span>
+          </div>
+          <div class="contact-row">
+            <span class="t-caption contact-key">Юрлицо</span>
+            <span class="t-body contact-val">Союзгидравлика</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <form onsubmit="return false;">
+          <div class="form-row">
+            <label for="f-name">Имя и компания</label>
+            <input type="text" id="f-name" placeholder="Иванов Иван, ООО Завод">
+          </div>
+          <div class="form-row">
+            <label for="f-contact">Телефон или e-mail</label>
+            <input type="text" id="f-contact" placeholder="+7 (___) ___-__-__ или mail@company.ru">
+          </div>
+          <div class="form-row">
+            <label for="f-task">Деталь, марка стали, задача</label>
+            <textarea id="f-task" placeholder="Например: шестерня привода, сталь 18ХГТ, нужна цементация + закалка, партия 200 шт."></textarea>
+          </div>
+          <label class="form-upload" for="f-file">
+            <div class="form-upload-icon">+</div>
+            <span>Прикрепить чертёж (опционально)</span>
+            <input type="file" id="f-file" accept=".pdf,.dwg,.dxf,.jpg,.png">
+          </label>
+          <button type="submit" class="form-submit">
+            Отправить запрос →
+          </button>
+          <p class="form-note t-small">
+            Или пришлите чертёж напрямую на почту —<br>технолог ответит в течение рабочего дня
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand-name">Союзгидравлика</div>
+        <div class="t-small footer-brand-sub">Российский производитель<br>гидравлики с 2000 года</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Услуги</div>
+        <ul class="footer-links">
+          <li><a href="#services">Объёмная закалка</a></li>
+          <li><a href="#services">Цементация</a></li>
+          <li><a href="#services">Нормализация</a></li>
+          <li><a href="#services">Отжиг</a></li>
+          <li><a href="#services">Улучшение</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Компания</div>
+        <ul class="footer-links">
+          <li><a href="#about">О заводе</a></li>
+          <li><a href="#process">Как работаем</a></li>
+          <li><a href="#case">Кейсы</a></li>
+          <li><a href="#specs">Параметры</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Контакты</div>
+        <ul class="footer-links">
+          <li><a href="#cta">Отправить чертёж</a></li>
+          <li><span style="color: var(--tertiary);">Белгород, Россия</span></li>
+          <li><span style="color: var(--tertiary);">Пн–Пт, 8:00–17:00</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="t-small footer-legal">© 2025 Союзгидравлика. Все права защищены.</span>
+      <span class="t-small footer-legal">Термообработка металлов по кооперации</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
